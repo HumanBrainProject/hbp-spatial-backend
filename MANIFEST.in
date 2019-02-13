@@ -1,0 +1,10 @@
+include LICENCE.txt
+include .coveragerc
+include .editorconfig
+include *.ini
+include *.sh
+
+prune docker-aims
+prune docker-backend
+
+recursive-include tests *.py
