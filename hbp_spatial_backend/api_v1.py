@@ -16,10 +16,23 @@
 # You should have received a copy of the GNU Affero General Public License
 # along with hbp-spatial-backend. If not, see <https://www.gnu.org/licenses/>.
 
+import os.path
+
+from flask import current_app, g
 import flask_restful
 import flask_restful.reqparse
 
 from hbp_spatial_backend import apply_transform
+from hbp_spatial_backend.transform_graph import TransformGraph
+
+
+def get_transform_graph():
+    if 'transform_graph' not in g:
+        tg_path = current_app.config['DEFAULT_TRANSFORM_GRAPH']
+        g.transform_graph_cwd = os.path.dirname(tg_path)
+        with open(tg_path, 'rb') as f:
+            g.transform_graph = TransformGraph.from_yaml(f)
+    return g.transform_graph
 
 
 def tuple_3floats(input_sequence):
@@ -41,12 +54,11 @@ class TransformPointApi(flask_restful.Resource):
         parser.add_argument('source_point', required=True,
                             type=tuple_3floats, location='json')
         args = parser.parse_args(strict=True)
-        # transform_chain = transform_graph.get_chain(source_space,
-        #                                             target_space)
-        transform_chain = []
-        target_point = apply_transform.transform_point(args.source_point,
-                                                       transform_chain)
-        target_point = args.source_point
+        tg = get_transform_graph()
+        transform_chain = tg.get_transform_chain(args.source_space,
+                                                 args.target_space)
+        target_point = apply_transform.transform_point(
+            args.source_point, transform_chain, cwd=g.transform_graph_cwd)
         return {'target_point': target_point}
 
 

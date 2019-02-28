@@ -23,7 +23,7 @@ import subprocess
 POINT_RE = re.compile(r'\(\s*([^,]*)\s*,\s*([^,]*)\s*,\s*([^,]*)\s*\)')
 
 
-def transform_point(source_point, direct_transform_chain):
+def transform_point(source_point, direct_transform_chain, cwd=None):
     source_point_str = '({0}, {1}, {2})'.format(*source_point)
     transform_params = []
     for t in direct_transform_chain:
@@ -33,7 +33,8 @@ def transform_point(source_point, direct_transform_chain):
          '--input', source_point_str,
          '--output', '/dev/stdout'] + transform_params,
         check=True,
-        stdout=subprocess.PIPE, universal_newlines=True)
+        stdout=subprocess.PIPE, universal_newlines=True,
+        cwd=cwd)
     match = POINT_RE.search(res.stdout)
     if not match:
         raise RuntimeError('Cannot parse output of AimsApplyTransform')

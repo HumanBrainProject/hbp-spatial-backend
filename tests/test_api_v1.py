@@ -16,8 +16,32 @@
 # You should have received a copy of the GNU Affero General Public License
 # along with hbp-spatial-backend. If not, see <https://www.gnu.org/licenses/>.
 
+import pytest
 
-def test_transform_point_request_validation(client):
+
+@pytest.fixture
+def test_graph_yaml(tmpdir):
+    graph_yaml = str(tmpdir / 'graph.yaml')
+    with open(graph_yaml, 'w') as f:
+        f.write('{A: {B: identity}, B: {}}')
+    return graph_yaml
+
+
+@pytest.fixture(autouse=True)
+def fake_apply_transform(monkeypatch):
+    from hbp_spatial_backend import apply_transform
+
+    def transform_point_mock(source_point, transform_chain, cwd=None):
+        if transform_chain == ['identity']:
+            return tuple(source_point)
+        raise RuntimeError('Unexpected call')
+
+    monkeypatch.setattr(apply_transform, 'transform_point',
+                        transform_point_mock)
+
+
+def test_transform_point_request_validation(app, client, test_graph_yaml):
+    app.config['DEFAULT_TRANSFORM_GRAPH'] = test_graph_yaml
     response = client.get('/v1/transform-point',
                           content_type='application/json')
     assert response.status_code == 400
