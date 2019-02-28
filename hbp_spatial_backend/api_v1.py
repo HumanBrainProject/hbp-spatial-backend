@@ -19,6 +19,8 @@
 import flask_restful
 import flask_restful.reqparse
 
+from hbp_spatial_backend import apply_transform
+
 
 def tuple_3floats(input_sequence):
     '''Convert a variable to a tuple of 3 floats
@@ -41,8 +43,9 @@ class TransformPointApi(flask_restful.Resource):
         args = parser.parse_args(strict=True)
         # transform_chain = transform_graph.get_chain(source_space,
         #                                             target_space)
-        # target_point = apply_transform.transform_point(source_point,
-        #                                                transform_chain)
+        transform_chain = []
+        target_point = apply_transform.transform_point(args.source_point,
+                                                       transform_chain)
         target_point = args.source_point
         return {'target_point': target_point}
 
