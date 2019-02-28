@@ -30,11 +30,9 @@ class TransformGraph:
         self.links[name] = {}
 
     def add_link(self, from_space, to_space, transform_file):
-        if (to_space in self.links[from_space]
-                or from_space in self.links[to_space]):
+        if to_space in self.links[from_space]:
             raise ValueError('{0} already has a link to {1}'.format(from_space,
                                                                     to_space))
-
         self.links[from_space][to_space] = transform_file
 
     def remove_link(self, from_space, to_space):

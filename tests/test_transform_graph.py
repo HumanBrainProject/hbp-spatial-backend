@@ -36,6 +36,7 @@ def test_transform_graph_sane_usage():
     assert chain == ['Transform A to B']
     chain = tg.get_transform_chain('B', 'A')
     assert chain is None
+    tg.add_link('B', 'A', 'Transform B to A')
     tg.add_space('C')
     chain = tg.get_transform_chain('A', 'C')
     assert chain is None
