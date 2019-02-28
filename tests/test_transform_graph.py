@@ -86,3 +86,12 @@ def test_export_graphviz():
     tg.add_link('A', 'weird"*+chars', 'Transform')
     buf = io.StringIO()
     tg.export_graphviz(buf)
+
+
+def test_load_from_yaml():
+    tg = transform_graph.TransformGraph.from_yaml(b'{A: {B: AtoB}, B: {}}')
+    chain = tg.get_transform_chain('A', 'B')
+    assert chain == ['AtoB']
+    tg = transform_graph.TransformGraph.from_yaml(b'{A: {B: AtoB}}')
+    chain = tg.get_transform_chain('A', 'B')
+    assert chain == ['AtoB']

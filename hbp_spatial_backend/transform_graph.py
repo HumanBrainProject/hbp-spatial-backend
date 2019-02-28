@@ -17,11 +17,38 @@
 # along with hbp-spatial-backend. If not, see <https://www.gnu.org/licenses/>.
 
 import collections
+import logging
+
+logger = logging.getLogger(__name__)
 
 
 class TransformGraph:
     def __init__(self):
         self.links = {}
+
+    @classmethod
+    def from_yaml(cls, yaml_stream):
+        import yaml
+        links = yaml.safe_load(yaml_stream)
+        if not isinstance(links, dict):
+            raise ValueError('Malformed TransformGraph YAML file')
+        # Ensure that every space that is listed as a target also appears as a
+        # source
+        sources_to_add = []
+        for source, targets in links.items():
+            for target in targets:
+                if target not in links:
+                    logger.warning('Missing top-level entry for space %r in '
+                                   'the YAML stream (%s)',
+                                   target,
+                                   getattr(yaml_stream, 'name',
+                                           '<unnamed stream>'))
+                    sources_to_add.append(target)
+        for space in sources_to_add:
+            links.setdefault(space, {})
+        tg = cls()
+        tg.links = links
+        return tg
 
     def add_space(self, name):
         name = str(name)
