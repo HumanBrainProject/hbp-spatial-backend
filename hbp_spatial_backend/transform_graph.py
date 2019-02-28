@@ -44,7 +44,7 @@ class TransformGraph:
         self.links[to_space]
 
         to_visit = collections.deque([from_space])
-        visited = set()
+        visited = {from_space}
         back_pointers = {from_space: (None, None)}
         # Breadth-first search on the spaces to find the shortest path
         while True:

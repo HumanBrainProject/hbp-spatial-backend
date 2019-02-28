@@ -16,6 +16,7 @@
 # You should have received a copy of the GNU Affero General Public License
 # along with hbp-spatial-backend. If not, see <https://www.gnu.org/licenses/>.
 
+import collections
 import io
 
 import pytest
@@ -50,15 +51,17 @@ def test_transform_graph_sane_usage():
 
 def test_transform_graph_cycle():
     tg = transform_graph.TransformGraph()
+    # Monkeypatch the tested class to get reliable ordering (with a plain dict
+    # Python's hash randomization makes the bug intermittent)
+    tg.links = collections.OrderedDict()
     tg.add_space('A')
     tg.add_space('B')
     tg.add_space('C')
     tg.add_link('A', 'B', 'Transform A to B')
-    tg.add_link('B', 'C', 'Transform B to C')
+    tg.add_link('A', 'C', 'Transform A to C')
     tg.add_link('C', 'A', 'Transform C to A')
-    tg.add_space('D')
-    chain = tg.get_transform_chain('A', 'D')
-    assert chain is None
+    chain = tg.get_transform_chain('A', 'B')
+    assert chain == ['Transform A to B']
 
 
 def test_transform_graph_api_errors():
