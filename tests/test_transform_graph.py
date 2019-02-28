@@ -95,3 +95,5 @@ def test_load_from_yaml():
     tg = transform_graph.TransformGraph.from_yaml(b'{A: {B: AtoB}}')
     chain = tg.get_transform_chain('A', 'B')
     assert chain == ['AtoB']
+    with pytest.raises(ValueError):
+        transform_graph.TransformGraph.from_yaml('[A, B, C]')
