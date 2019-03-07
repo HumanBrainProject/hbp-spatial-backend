@@ -18,12 +18,14 @@
 
 import os.path
 
-from flask import current_app, g
-import flask_restful
-import flask_restful.reqparse
+import flask
+from flask import current_app, g, request, jsonify
 
 from hbp_spatial_backend import apply_transform
 from hbp_spatial_backend.transform_graph import TransformGraph
+
+
+bp = flask.Blueprint('api_v1', __name__, url_prefix='/v1')
 
 
 def get_transform_graph():
@@ -35,33 +37,18 @@ def get_transform_graph():
     return g.transform_graph
 
 
-def tuple_3floats(input_sequence):
-    '''Convert a variable to a tuple of 3 floats
+@bp.route('/transform-point')
+def transform_point():
+    source_space = request.args['source_space']
+    target_space = request.args['target_space']
+    x = float(request.args['x'])
+    y = float(request.args['y'])
+    z = float(request.args['z'])
+    source_point = (x, y, z)
 
-    TypeError is raised if the conversion is not possible.
-    '''
-    input_tuple = tuple(input_sequence)
-    if len(input_tuple) != 3:
-        raise TypeError('the input sequence is not of length 3')
-    return tuple(float(x) for x in input_tuple)
+    tg = get_transform_graph()
+    transform_chain = tg.get_transform_chain(source_space, target_space)
+    target_point = apply_transform.transform_point(
+        source_point, transform_chain, cwd=g.transform_graph_cwd)
 
-
-class TransformPointApi(flask_restful.Resource):
-    def get(self):
-        parser = flask_restful.reqparse.RequestParser()
-        parser.add_argument('source_space', required=True, location='json')
-        parser.add_argument('target_space', required=True, location='json')
-        parser.add_argument('source_point', required=True,
-                            type=tuple_3floats, location='json')
-        args = parser.parse_args(strict=True)
-        tg = get_transform_graph()
-        transform_chain = tg.get_transform_chain(args.source_space,
-                                                 args.target_space)
-        target_point = apply_transform.transform_point(
-            args.source_point, transform_chain, cwd=g.transform_graph_cwd)
-        return {'target_point': target_point}
-
-
-def register_api(app, *args, **kwargs):
-    api = flask_restful.Api(app, *args, **kwargs)
-    api.add_resource(TransformPointApi, '/transform-point')
+    return jsonify({'target_point': target_point})

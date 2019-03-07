@@ -65,7 +65,7 @@ def create_app(test_config=None):
     def source():
         return flask.redirect(SOURCE_URL)
 
-    import hbp_spatial_backend.api_v1
-    hbp_spatial_backend.api_v1.register_api(app, prefix='/v1')
+    from . import api_v1
+    app.register_blueprint(api_v1.bp)
 
     return app

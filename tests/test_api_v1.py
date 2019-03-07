@@ -42,33 +42,26 @@ def fake_apply_transform(monkeypatch):
 
 def test_transform_point_request_validation(app, client, test_graph_yaml):
     app.config['DEFAULT_TRANSFORM_GRAPH'] = test_graph_yaml
-    response = client.get('/v1/transform-point',
-                          content_type='application/json')
+    response = client.get('/v1/transform-point')
     assert response.status_code == 400
     response = client.get('/v1/transform-point',
-                          json={'source_point': [1, 2, 3],
-                                'source_space': 'A',
-                                'target_space': 'B'})
+                          query_string={'source_space': 'A',
+                                        'target_space': 'B',
+                                        'x': 1, 'y': 2, 'z': 3.5})
     assert response.status_code == 200
-    assert response.json == {'target_point': [1, 2, 3]}
+    assert response.json == {'target_point': [1, 2, 3.5]}
 
     response = client.get('/v1/transform-point',
-                          json={'source_space': 'A',
-                                'target_space': 'B'})
+                          query_string={'source_space': 'A',
+                                        'target_space': 'B'})
     assert response.status_code == 400
 
     response = client.get('/v1/transform-point',
-                          json={'source_point': [1, 2, 3],
-                                'target_space': 'B'})
+                          query_string={'x': 1, 'y': 2, 'z': 3,
+                                        'target_space': 'B'})
     assert response.status_code == 400
 
     response = client.get('/v1/transform-point',
-                          json={'source_point': [1, 2, 3],
-                                'source_space': 'A'})
-    assert response.status_code == 400
-
-    response = client.get('/v1/transform-point',
-                          json={'source_point': [1, 2],
-                                'source_space': 'A',
-                                'target_space': 'B'})
+                          query_string={'x': 1, 'y': 2, 'z': 3,
+                                        'source_space': 'A'})
     assert response.status_code == 400
