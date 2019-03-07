@@ -62,7 +62,7 @@ def create_app(test_config=None):
         flask_cors.CORS(app)
 
     @app.route("/source")
-    def root():
+    def source():
         return flask.redirect(SOURCE_URL)
 
     import hbp_spatial_backend.api_v1
