@@ -19,7 +19,10 @@
 import os.path
 
 import flask
-from flask import current_app, g, request, jsonify
+from flask import abort, current_app, g, jsonify, request
+
+import marshmallow
+from marshmallow import Schema, fields
 
 from hbp_spatial_backend import apply_transform
 from hbp_spatial_backend.transform_graph import TransformGraph
@@ -37,18 +40,32 @@ def get_transform_graph():
     return g.transform_graph
 
 
+class TransformPointRequestSchema(Schema):
+    source_space = fields.Str(required=True)
+    target_space = fields.Str(required=True)
+    x = fields.Float(required=True)
+    y = fields.Float(required=True)
+    z = fields.Float(required=True)
+
+
 @bp.route('/transform-point')
 def transform_point():
-    source_space = request.args['source_space']
-    target_space = request.args['target_space']
-    x = float(request.args['x'])
-    y = float(request.args['y'])
-    z = float(request.args['z'])
-    source_point = (x, y, z)
+    args = TransformPointRequestSchema().load(request.args)
+    source_point = (args['x'], args['y'], args['z'])
+    source_space = args['source_space']
+    target_space = args['target_space']
 
     tg = get_transform_graph()
-    transform_chain = tg.get_transform_chain(source_space, target_space)
+    try:
+        transform_chain = tg.get_transform_chain(source_space, target_space)
+    except KeyError:
+        abort(400, 'source_space or target_space not found')
     target_point = apply_transform.transform_point(
         source_point, transform_chain, cwd=g.transform_graph_cwd)
 
     return jsonify({'target_point': target_point})
+
+
+@bp.errorhandler(marshmallow.exceptions.ValidationError)
+def handle_validation_error(exc):
+    return jsonify({'errors': exc.messages}), 400

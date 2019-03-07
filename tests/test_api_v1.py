@@ -65,3 +65,15 @@ def test_transform_point_request_validation(app, client, test_graph_yaml):
                           query_string={'x': 1, 'y': 2, 'z': 3,
                                         'source_space': 'A'})
     assert response.status_code == 400
+
+    response = client.get('/v1/transform-point',
+                          query_string={'x': 1, 'y': 2, 'z': 3,
+                                        'source_space': 'A',
+                                        'target_space': 'nonexistent'})
+    assert response.status_code == 400
+
+    response = client.get('/v1/transform-point',
+                          query_string={'x': 1, 'y': 2, 'z': 3,
+                                        'source_space': 'nonexistent',
+                                        'target_space': 'B'})
+    assert response.status_code == 400
