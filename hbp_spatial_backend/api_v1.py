@@ -19,7 +19,7 @@
 import os.path
 
 import flask
-from flask import abort, current_app, g, jsonify, request
+from flask import current_app, g, jsonify, request
 
 import marshmallow
 from marshmallow import Schema, fields
@@ -59,7 +59,9 @@ def transform_point():
     try:
         transform_chain = tg.get_transform_chain(source_space, target_space)
     except KeyError:
-        abort(400, 'source_space or target_space not found')
+        return jsonify(
+            {'errors': ['source_space or target_space not found']}
+        ), 400
     target_point = apply_transform.transform_point(
         source_point, transform_chain, cwd=g.transform_graph_cwd)
 
