@@ -5,6 +5,7 @@ include *.ini
 include *.sh
 
 prune docker-aims
-prune docker-backend
+
+include Dockerfile
 
 recursive-include tests *.py
