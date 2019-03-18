@@ -55,7 +55,7 @@ setuptools.setup(
         "Flask ~= 1.0",
         "Flask-Cors",
         "marshmallow ~= 3.0.0rc4",
-        "PyYAML ~= 3.13",
+        "PyYAML ~= 5.1",
     ],
     python_requires="~= 3.5",
     extras_require={
