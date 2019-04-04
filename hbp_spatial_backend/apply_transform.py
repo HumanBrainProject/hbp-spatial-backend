@@ -16,9 +16,14 @@
 # You should have received a copy of the GNU Affero General Public License
 # along with hbp-spatial-backend. If not, see <https://www.gnu.org/licenses/>.
 
+import logging
+import time
+
 import re
 import subprocess
 
+
+logger = logging.getLogger(__name__)
 
 POINT_RE = re.compile(r'\(\s*([^,]*)\s*,\s*([^,]*)\s*,\s*([^,]*)\s*\)')
 
@@ -27,6 +32,7 @@ def transform_point(source_point, direct_transform_chain, cwd=None):
     transform_params = []
     for t in direct_transform_chain:
         transform_params.extend(['--direct-transform', t])
+    time_before = time.perf_counter()
     res = subprocess.run(
         ['AimsApplyTransform',
          '--points',
@@ -37,6 +43,8 @@ def transform_point(source_point, direct_transform_chain, cwd=None):
         input='({0}, {1}, {2})'.format(*source_point),
         stdout=subprocess.PIPE, universal_newlines=True,
         cwd=cwd)
+    elapsed_time = time.perf_counter() - time_before
+    logger.info('AimsApplyTransform completed in %.3f s', elapsed_time)
     match = POINT_RE.search(res.stdout)
     if not match:
         raise RuntimeError('Cannot parse output of AimsApplyTransform')
