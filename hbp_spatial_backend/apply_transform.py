@@ -24,15 +24,17 @@ POINT_RE = re.compile(r'\(\s*([^,]*)\s*,\s*([^,]*)\s*,\s*([^,]*)\s*\)')
 
 
 def transform_point(source_point, direct_transform_chain, cwd=None):
-    source_point_str = '({0}, {1}, {2})'.format(*source_point)
     transform_params = []
     for t in direct_transform_chain:
         transform_params.extend(['--direct-transform', t])
     res = subprocess.run(
         ['AimsApplyTransform',
-         '--input', source_point_str,
-         '--output', '/dev/stdout'] + transform_params,
+         '--points',
+         '--mmap-fields',
+         '--input', '-',
+         '--output', '-'] + transform_params,
         check=True,
+        input='({0}, {1}, {2})'.format(*source_point),
         stdout=subprocess.PIPE, universal_newlines=True,
         cwd=cwd)
     match = POINT_RE.search(res.stdout)
