@@ -19,6 +19,8 @@
 import re
 import subprocess
 
+from flask import current_app
+
 
 POINT_RE = re.compile(r'\(\s*([^,]*)\s*,\s*([^,]*)\s*,\s*([^,]*)\s*\)')
 
@@ -36,7 +38,8 @@ def transform_point(source_point, direct_transform_chain, cwd=None):
         check=True,
         input='({0}, {1}, {2})'.format(*source_point),
         stdout=subprocess.PIPE, universal_newlines=True,
-        cwd=cwd)
+        cwd=cwd,
+        timeout=current_app.config['REQUEST_TIMEOUT'])
     match = POINT_RE.search(res.stdout)
     if not match:
         raise RuntimeError('Cannot parse output of AimsApplyTransform')

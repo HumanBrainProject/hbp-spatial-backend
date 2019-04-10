@@ -25,15 +25,17 @@ from hbp_spatial_backend import apply_transform
 
 @pytest.mark.skipif(find_executable('AimsApplyTransform') is None,
                     reason='AimsApplyTransform not found on PATH')
-def test_call_transform_point():
-    res = apply_transform.transform_point([1, 2, 3], [])
+def test_call_transform_point(app):
+    with app.app_context():
+        res = apply_transform.transform_point([1, 2, 3], [])
     assert res == (1, 2, 3)
 
 @pytest.mark.skipif(find_executable('AimsApplyTransform') is None,
                     reason='AimsApplyTransform not found on PATH')
-def test_call_transform_point_with_trm(tmpdir):
+def test_call_transform_point_with_trm(tmpdir, app):
     test_trm = str(tmpdir / 'test.trm')
     with open(test_trm, 'w') as f:
         f.write('0 0 0\n-1 0 0\n0 -1 0\n0 0 -1\n')
-    res = apply_transform.transform_point([1, 2, 3], [test_trm])
+    with app.app_context():
+        res = apply_transform.transform_point([1, 2, 3], [test_trm])
     assert res == (-1, -2, -3)

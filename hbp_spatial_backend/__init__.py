@@ -33,6 +33,10 @@ SOURCE_URL = 'https://github.com/HumanBrainProject/hbp-spatial-backend'
 
 class DefaultConfig:
     CORS_ALLOW_ALL = True
+    # Timeout, in seconds, to wait for AimsApplyTransform to reply before
+    # cancelling the request. This is useful if running behind a reverse proxy
+    # that has its own timeout anyway
+    REQUEST_TIMEOUT = None
 
 
 # This function has a magic name which is recognized by flask as a factory for
