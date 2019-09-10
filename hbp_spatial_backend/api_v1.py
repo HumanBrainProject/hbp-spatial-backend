@@ -19,7 +19,7 @@
 import os.path
 
 import flask
-from flask import current_app, g, jsonify, request, Response
+from flask import current_app, g, jsonify, request
 
 import marshmallow
 from marshmallow import Schema, fields
