@@ -65,7 +65,10 @@ def transform_point():
     target_point = apply_transform.transform_point(
         source_point, transform_chain, cwd=g.transform_graph_cwd)
 
-    return jsonify({'target_point': target_point})
+    response = jsonify({'target_point': target_point})
+    response.cache_control.public = True
+    response.cache_control.max_age = 86400  # 1 day
+    return response
 
 
 @bp.errorhandler(marshmallow.exceptions.ValidationError)

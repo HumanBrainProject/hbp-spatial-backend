@@ -16,6 +16,7 @@
 # You should have received a copy of the GNU Affero General Public License
 # along with hbp-spatial-backend. If not, see <https://www.gnu.org/licenses/>.
 
+import logging.config
 import os
 
 import flask
@@ -42,6 +43,23 @@ class DefaultConfig:
 # This function has a magic name which is recognized by flask as a factory for
 # the main app.
 def create_app(test_config=None):
+    logging.config.dictConfig({
+        'version': 1,
+        'formatters': {'default': {
+            'format': '[%(asctime)s] [%(process)d] %(levelname)s '
+                      'in %(module)s: %(message)s',
+            'datefmt': '%Y-%m-%d %H:%M:%S %z',
+        }},
+        'handlers': {'wsgi': {
+            'class': 'logging.StreamHandler',
+            'stream': 'ext://flask.logging.wsgi_errors_stream',
+            'formatter': 'default'
+        }},
+        'root': {
+            'level': 'INFO',
+            'handlers': ['wsgi']
+        }
+    })
     app = flask.Flask(__name__,
                       instance_path=os.environ.get("INSTANCE_PATH"),
                       instance_relative_config=True)
