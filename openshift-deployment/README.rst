@@ -63,7 +63,7 @@ For the record, here are the steps that were used to create this OpenShift proje
                  'x_port': 1,
                  'x_proto': 1,
              }
-             DEFAULT_TRANSFORM_GRAPH = /static-data/DISCO_20181004_sigV30_DARTEL_20181004_reg_x4/graph.yaml
+             DEFAULT_TRANSFORM_GRAPH = '/static-data/DISCO_20181004_sigV30_DARTEL_20181004_reg_x4/graph.yaml'
 
       #. Hit `Create`
       #. Back in the `Add Config Files` page, choose the newly created `instance-dir` as `Source`
