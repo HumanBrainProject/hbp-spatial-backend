@@ -17,7 +17,7 @@ RUN python3 -m pip install --no-cache-dir setuptools
 COPY . /source
 RUN python3 -m pip install --no-cache-dir /source
 
-RUN python3 -m pip install --no-cache-dir gunicorn
+RUN python3 -m pip install --no-cache-dir gunicorn[eventlet]
 
 
 ######################
@@ -37,9 +37,10 @@ RUN mkdir -p ${INSTANCE_PATH} && chown user:user ${INSTANCE_PATH}
 RUN mkdir -p ${TRANSFORMATION_DATA_PATH} && chown user:user ${TRANSFORMATION_DATA_PATH}
 USER user
 
+
 ###########################
 # 4. Configure the server #
 ###########################
 ENV FLASK_APP hbp_spatial_backend
 EXPOSE 8080
-CMD gunicorn --access-logfile=- --preload 'hbp_spatial_backend:create_app()' --bind=:8080
+CMD gunicorn --access-logfile=- --preload 'hbp_spatial_backend:create_app()' --bind=:8080 --worker-class=eventlet
