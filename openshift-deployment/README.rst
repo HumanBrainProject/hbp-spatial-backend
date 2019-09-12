@@ -1,6 +1,11 @@
 Deployment on openshift-dev.hbp.eu
 ==================================
 
+The deployment configuration is saved to `openshift-dev-export.yaml` by running
+``oc get -o yaml --export is,bc,dc,svc,route,pvc``. See
+https://collab.humanbrainproject.eu/#/collab/38996/nav/270508 for instructions
+for restoring a working deployment using this snapshot.
+
 For the record, here are the steps that were used to create this OpenShift project:
 
 #. Create the project / navigate to the project
@@ -99,6 +104,6 @@ For the record, here are the steps that were used to create this OpenShift proje
 
    #. Add Health Checks
       #. Go to `Applications` -> `Deployments` -> `flask` -> `Actions` -> `Edit Health Checks`
-      #. Add a `Readiness Probe` of type `HTTP GET`, using `Path` = `/health`, setting some `Initial Delay` (e.g. 5 seconds)
-      #. Add a `Liveness Probe` of type `HTTP GET`, using `Path` = `/health`, setting a long `Timeout` (e.g. 10 seconds)
+      #. Add a `Readiness Probe` of type `HTTP GET`, using `Path` = `/health`, setting some `Initial Delay` (e.g. 5 seconds) and `Timeout` (e.g. 10 seconds)
+      #. Add a `Liveness Probe` of type `HTTP GET`, using `Path` = `/health`, setting a long `Timeout` (e.g. 60 seconds)
       #. Hit `Save`
