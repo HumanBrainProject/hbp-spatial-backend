@@ -96,3 +96,9 @@ For the record, here are the steps that were used to create this OpenShift proje
       #. Copy the data using ``oc rsync --compress=true --progress=true /volatile/hbp-spatial-transformations-data/ dummy-2-7tdml:/static-data/`` (replace `dummy-2-7tdml` with the pod name from the previous step).
       #. Verify the contents of the directory with ``oc rsh dummy-2-7tdml ls -l /static-data``
       #. Delete everything related to the temporary pod with ``oc delete all --selector run=dummy``
+
+   #. Add Health Checks
+      #. Go to `Applications` -> `Deployments` -> `flask` -> `Actions` -> `Edit Health Checks`
+      #. Add a `Readiness Probe` of type `HTTP GET`, using `Path` = `/health`, setting some `Initial Delay` (e.g. 5 seconds)
+      #. Add a `Liveness Probe` of type `HTTP GET`, using `Path` = `/health`, setting a long `Timeout` (e.g. 10 seconds)
+      #. Hit `Save`
