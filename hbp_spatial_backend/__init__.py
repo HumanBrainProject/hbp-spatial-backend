@@ -16,6 +16,7 @@
 # You should have received a copy of the GNU Affero General Public License
 # along with hbp-spatial-backend. If not, see <https://www.gnu.org/licenses/>.
 
+import logging
 import logging.config
 import os
 
@@ -46,6 +47,7 @@ class DefaultConfig:
 # This function has a magic name which is recognized by flask as a factory for
 # the main app.
 def create_app(test_config=None):
+    """Instantiate the hbp-spatial-backend Flask application."""
     logging.config.dictConfig({
         'version': 1,
         'formatters': {'default': {
@@ -63,10 +65,17 @@ def create_app(test_config=None):
             'handlers': ['wsgi']
         }
     })
+
+    # If we are running under Gunicorn, set up the root logger to use the same
+    # handler as the Gunicorn error stream.
+    if logging.getLogger('gunicorn.error').handlers:
+        root_logger = logging.getLogger()
+        root_logger.handlers = logging.getLogger('gunicorn.error').handlers
+        root_logger.setLevel(logging.getLogger('gunicorn.error').level)
+
     app = flask.Flask(__name__,
                       instance_path=os.environ.get("INSTANCE_PATH"),
                       instance_relative_config=True)
-
     app.config.from_object(DefaultConfig)
     if test_config is None:
         # load the instance config, if it exists, when not testing
@@ -98,5 +107,9 @@ def create_app(test_config=None):
 
     from . import api_v1
     app.register_blueprint(api_v1.bp)
+
+    if app.config.get('PROXY_FIX'):
+        from werkzeug.middleware.proxy_fix import ProxyFix
+        app.wsgi_app = ProxyFix(app.wsgi_app, **app.config['PROXY_FIX'])
 
     return app
