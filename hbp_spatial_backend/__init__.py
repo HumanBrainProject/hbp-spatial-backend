@@ -38,6 +38,9 @@ class DefaultConfig:
     # cancelling the request. This is useful if running behind a reverse proxy
     # that has its own timeout anyway
     REQUEST_TIMEOUT = None
+    # Configuration keys without a default value:
+    # DEFAULT_TRANSFORM_GRAPH: full path to the YAML file that contains the
+    #     default transform graph (used by v1 API)
 
 
 # This function has a magic name which is recognized by flask as a factory for

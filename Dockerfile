@@ -32,7 +32,7 @@ VOLUME ${INSTANCE_PATH}
 ###########################################################
 # 3. Create an unprivileged user that will run the server #
 ###########################################################
-RUN groupadd -r user && useradd -r -g user user
+RUN useradd --create-home user
 RUN mkdir -p ${INSTANCE_PATH} && chown user:user ${INSTANCE_PATH}
 RUN mkdir -p ${TRANSFORMATION_DATA_PATH} && chown user:user ${TRANSFORMATION_DATA_PATH}
 USER user
