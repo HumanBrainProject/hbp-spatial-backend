@@ -14,10 +14,10 @@ RUN apt-get update \
 # Setuptools is needed to import from source
 RUN python3 -m pip install --no-cache-dir setuptools
 
+RUN python3 -m pip install --no-cache-dir gunicorn[gevent]
+
 COPY . /source
 RUN python3 -m pip install --no-cache-dir /source
-
-RUN python3 -m pip install --no-cache-dir gunicorn[eventlet]
 
 
 ######################
@@ -43,4 +43,4 @@ USER user
 ###########################
 ENV FLASK_APP hbp_spatial_backend
 EXPOSE 8080
-CMD gunicorn --access-logfile=- --preload 'hbp_spatial_backend:create_app()' --bind=:8080 --worker-class=eventlet
+CMD gunicorn --access-logfile=- --preload 'hbp_spatial_backend:create_app()' --bind=:8080 --worker-class=gevent
