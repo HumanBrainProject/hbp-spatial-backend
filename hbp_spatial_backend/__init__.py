@@ -82,7 +82,9 @@ def create_app(test_config=None):
     exclude_useragent_re = re.compile(r'kube-probe')
     access_logger.addFilter(
         lambda record: not (
-            record.args['U'].startswith('10.')
+            record.args['h'].startswith('10.')
+            and record.args['m'] == 'GET'
+            and record.args['U'] == '/health'
             and exclude_useragent_re.search(record.args['a'])
         )
     )
