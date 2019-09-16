@@ -107,3 +107,15 @@ For the record, here are the steps that were used to create this OpenShift proje
       #. Add a `Readiness Probe` of type `HTTP GET`, using `Path` = `/health`, setting some `Initial Delay` (e.g. 5 seconds) and `Timeout` (e.g. 10 seconds)
       #. Add a `Liveness Probe` of type `HTTP GET`, using `Path` = `/health`, setting a long `Timeout` (e.g. 60 seconds)
       #. Hit `Save`
+
+
+Deploying to production
+=======================
+
+#. Process `openshift-dev-export.yaml` as described in https://collab.humanbrainproject.eu/#/collab/38996/nav/270508 , write the result to `openshift-prod-import.yaml`.
+#. Create the project named `hbp-spatial-backend` on https://openshift.hbp.eu/
+#. Log in to https://openshift.hbp.eu/ using the command-line ``oc`` tool, switch to the `hbp-spatial-backend` project
+#. Import the object from your edited YAML file using ``oc create -f openshift-prod-import.yaml``
+#. Create the needed Config Maps and Secrets
+#. Upload the static data as explained above
+#. Start the build. The deployment should follow automatically.

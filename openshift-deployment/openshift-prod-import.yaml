@@ -1,0 +1,247 @@
+apiVersion: v1
+items:
+- apiVersion: image.openshift.io/v1
+  kind: ImageStream
+  metadata:
+    annotations:
+      openshift.io/generated-by: OpenShiftWebConsole
+    creationTimestamp: 2019-09-11T12:36:45Z
+    generation: 1
+    labels:
+      app: flask
+    name: flask
+    namespace: hbp-spatial-backend
+    resourceVersion: "17818721"
+    selfLink: /apis/image.openshift.io/v1/namespaces/hbp-spatial-backend/imagestreams/flask
+    uid: d0ec96fd-d490-11e9-acd7-fa163e8fd6a1
+  spec:
+    lookupPolicy:
+      local: false
+- apiVersion: build.openshift.io/v1
+  kind: BuildConfig
+  metadata:
+    annotations:
+      openshift.io/generated-by: OpenShiftWebConsole
+    creationTimestamp: 2019-09-11T12:36:46Z
+    labels:
+      app: flask
+    name: flask
+    namespace: hbp-spatial-backend
+    resourceVersion: "17818520"
+    selfLink: /apis/build.openshift.io/v1/namespaces/hbp-spatial-backend/buildconfigs/flask
+    uid: d1229925-d490-11e9-acd7-fa163e8fd6a1
+  spec:
+    nodeSelector: null
+    output:
+      to:
+        kind: ImageStreamTag
+        name: flask:latest
+    postCommit:
+      script: |
+        set -e
+        python3 -m pip install --user /source[tests]
+        cd /source
+        python3 -m pytest
+    resources: {}
+    runPolicy: Serial
+    source:
+      git:
+        ref: master
+        uri: https://github.com/HumanBrainProject/hbp-spatial-backend.git
+      type: Git
+    strategy:
+      dockerStrategy:
+        dockerfilePath: Dockerfile
+        forcePull: true
+      type: Docker
+    triggers:
+    - generic:
+        secret: 27e0b84d966062ca
+      type: Generic
+    - github:
+        secret: 58d5802cdd41a492
+      type: GitHub
+- apiVersion: apps.openshift.io/v1
+  kind: DeploymentConfig
+  metadata:
+    annotations:
+      openshift.io/generated-by: OpenShiftWebConsole
+    creationTimestamp: 2019-09-11T12:36:45Z
+    generation: 24
+    labels:
+      app: flask
+    name: flask
+    namespace: hbp-spatial-backend
+    resourceVersion: "17821785"
+    selfLink: /apis/apps.openshift.io/v1/namespaces/hbp-spatial-backend/deploymentconfigs/flask
+    uid: d0eda67e-d490-11e9-acd7-fa163e8fd6a1
+  spec:
+    replicas: 1
+    selector:
+      deploymentconfig: flask
+    strategy:
+      activeDeadlineSeconds: 21600
+      resources: {}
+      rollingParams:
+        intervalSeconds: 1
+        maxSurge: 25%
+        maxUnavailable: 25%
+        timeoutSeconds: 600
+        updatePeriodSeconds: 1
+      type: Rolling
+    template:
+      metadata:
+        creationTimestamp: null
+        labels:
+          app: flask
+          deploymentconfig: flask
+      spec:
+        containers:
+        - env:
+          - name: INSTANCE_PATH
+            value: /instance
+          image: docker-registry.default.svc:5000/hbp-spatial-backend/flask
+          imagePullPolicy: Always
+          livenessProbe:
+            failureThreshold: 3
+            httpGet:
+              path: /health
+              port: 8080
+              scheme: HTTP
+            periodSeconds: 10
+            successThreshold: 1
+            timeoutSeconds: 60
+          name: flask
+          ports:
+          - containerPort: 8080
+            protocol: TCP
+          readinessProbe:
+            failureThreshold: 3
+            httpGet:
+              path: /health
+              port: 8080
+              scheme: HTTP
+            initialDelaySeconds: 5
+            periodSeconds: 10
+            successThreshold: 1
+            timeoutSeconds: 10
+          resources: {}
+          terminationMessagePath: /dev/termination-log
+          terminationMessagePolicy: File
+          volumeMounts:
+          - mountPath: /instance
+            name: volume-6c4ne
+          - mountPath: /static-data
+            name: volume-vjjd7
+            readOnly: true
+        dnsPolicy: ClusterFirst
+        restartPolicy: Always
+        schedulerName: default-scheduler
+        securityContext: {}
+        terminationGracePeriodSeconds: 30
+        volumes:
+        - configMap:
+            defaultMode: 420
+            name: instance-dir
+          name: volume-6c4ne
+        - name: volume-vjjd7
+          persistentVolumeClaim:
+            claimName: static-data
+    test: false
+    triggers:
+    - imageChangeParams:
+        automatic: true
+        containerNames:
+        - flask
+        from:
+          kind: ImageStreamTag
+          name: flask:latest
+          namespace: hbp-spatial-backend
+        lastTriggeredImage: docker-registry.default.svc:5000/hbp-spatial-backend/flask@sha256:57dc17bf75d0d593d37c8d41fc80fe1d2762d1056b8e78a6393fb039e45a398d
+      type: ImageChange
+    - type: ConfigChange
+- apiVersion: v1
+  kind: Service
+  metadata:
+    annotations:
+      openshift.io/generated-by: OpenShiftWebConsole
+    creationTimestamp: 2019-09-11T12:36:46Z
+    labels:
+      app: flask
+    name: flask
+    namespace: hbp-spatial-backend
+    resourceVersion: "17504493"
+    selfLink: /api/v1/namespaces/hbp-spatial-backend/services/flask
+    uid: d1233ad2-d490-11e9-acd7-fa163e8fd6a1
+  spec:
+    clusterIP: 172.30.20.217
+    ports:
+    - name: 8080-tcp
+      port: 8080
+      protocol: TCP
+      targetPort: 8080
+    selector:
+      deploymentconfig: flask
+    sessionAffinity: None
+    type: ClusterIP
+- apiVersion: v1
+  kind: Service
+  metadata:
+    creationTimestamp: 2019-09-11T12:59:39Z
+    labels:
+      gluster.kubernetes.io/provisioned-for-pvc: static-data
+    name: glusterfs-dynamic-002243cf-d494-11e9-acd7-fa163e8fd6a1
+    namespace: hbp-spatial-backend
+    resourceVersion: "17509721"
+    selfLink: /api/v1/namespaces/hbp-spatial-backend/services/glusterfs-dynamic-002243cf-d494-11e9-acd7-fa163e8fd6a1
+    uid: 03fa8c7a-d494-11e9-9fef-fa163e42fca5
+  spec:
+    clusterIP: 172.30.23.17
+    ports:
+    - port: 1
+      protocol: TCP
+      targetPort: 1
+    sessionAffinity: None
+    type: ClusterIP
+- apiVersion: route.openshift.io/v1
+  kind: Route
+  metadata:
+    annotations:
+      openshift.io/generated-by: OpenShiftWebConsole
+    creationTimestamp: 2019-09-11T12:36:45Z
+    labels:
+      app: flask
+    name: flask
+    namespace: hbp-spatial-backend
+    resourceVersion: "17504494"
+    selfLink: /apis/route.openshift.io/v1/namespaces/hbp-spatial-backend/routes/flask
+    uid: d0eddece-d490-11e9-acd7-fa163e8fd6a1
+  spec:
+    host: hbp-spatial-backend.apps.hbp.eu
+    port:
+      targetPort: 8080-tcp
+    tls:
+      termination: edge
+    to:
+      kind: Service
+      name: flask
+      weight: 100
+    wildcardPolicy: None
+- apiVersion: v1
+  kind: PersistentVolumeClaim
+  metadata:
+    name: static-data
+    namespace: hbp-spatial-backend
+    resourceVersion: "17509726"
+    selfLink: /api/v1/namespaces/hbp-spatial-backend/persistentvolumeclaims/static-data
+    uid: 002243cf-d494-11e9-acd7-fa163e8fd6a1
+  spec:
+    accessModes:
+    - ReadWriteOnce
+    resources:
+      requests:
+        storage: 10Gi
+kind: List
+metadata:
+  resourceVersion: ""
+  selfLink: ""
