@@ -19,6 +19,7 @@
 import logging
 import logging.config
 import os
+import re
 
 import flask
 
@@ -75,6 +76,16 @@ def create_app(test_config=None):
         root_logger = logging.getLogger()
         root_logger.handlers = logging.getLogger('gunicorn.error').handlers
         root_logger.setLevel(logging.getLogger('gunicorn.error').level)
+
+    # Hide Kubernetes health probes from the logs
+    access_logger = logging.getLogger('gunicorn.access')
+    exclude_useragent_re = re.compile(r'kube-probe')
+    access_logger.addFilter(
+        lambda record: not (
+            record.args['U'].startswith('10.')
+            and exclude_useragent_re.search(record.args['a'])
+        )
+    )
 
     app = flask.Flask(__name__,
                       instance_path=os.environ.get("INSTANCE_PATH"),
