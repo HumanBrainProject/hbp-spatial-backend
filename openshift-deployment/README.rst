@@ -55,8 +55,7 @@ For the record, here are the steps that were used to create this OpenShift proje
          - `Key` = `config.py`
          - `Value`::
 
-             CORS_ALLOW_ALL = True
-             REQUEST_TIMEOUT = 30  # seconds
+             CORS_ORIGINS = '*'
              PROXY_FIX = {
                  'x_for': 1,
                  'x_host': 1,
@@ -107,7 +106,7 @@ For the record, here are the steps that were used to create this OpenShift proje
 Deploying to production
 =======================
 
-#. Once the project is successfully deployed on openshift-dev, export the deployment configuration: run ``oc get -o yaml --export is,bc,dc,svc,route,pvc > openshift-dev-export.yaml``.
+#. Once the project is successfully deployed on openshift-dev, export the deployment configuration: run ``oc get -o yaml --export is,bc,dc,svc,route,pvc,cm > openshift-dev-export.yaml``.
 #. Process `openshift-dev-export.yaml` as described in https://collab.humanbrainproject.eu/#/collab/38996/nav/270508 , write the result to `openshift-prod-import.yaml`.
 #. Create the project named `hbp-spatial-backend` on https://openshift.hbp.eu/
 #. Log in to https://openshift.hbp.eu/ using the command-line ``oc`` tool, switch to the `hbp-spatial-backend` project
@@ -116,4 +115,4 @@ Deploying to production
 #. Upload the static data as explained above
 #. Start the build. The deployment should follow automatically.
 
-The production configuration has been exported to `openshift-prod-export.yaml` using ``oc get -o yaml --export is,bc,dc,svc,route,pvc`` (`status` information was manually stripped).
+The production configuration has been exported to `openshift-prod-export.yaml` using ``oc get -o yaml --export is,bc,dc,svc,route,pvc,cm`` (`status` information was manually stripped).

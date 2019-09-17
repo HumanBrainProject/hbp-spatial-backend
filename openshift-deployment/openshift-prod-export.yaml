@@ -313,6 +313,25 @@ items:
         storage: 10Gi
     storageClassName: glusterfs-storage
     volumeName: pvc-b3c5c4a1-d566-11e9-822a-fa163ea97e2e
+- apiVersion: v1
+  data:
+    config.py: |
+      CORS_ORIGINS = '*'
+      PROXY_FIX = {
+          'x_for': 1,
+          'x_host': 1,
+          'x_port': 1,
+          'x_proto': 1,
+      }
+      DEFAULT_TRANSFORM_GRAPH = '/static-data/DISCO_20181004_sigV30_DARTEL_20181004_reg_x4/graph.yaml'
+  kind: ConfigMap
+  metadata:
+    creationTimestamp: 2019-09-12T14:21:20Z
+    name: instance-dir
+    namespace: hbp-spatial-backend
+    resourceVersion: "53926099"
+    selfLink: /api/v1/namespaces/hbp-spatial-backend/configmaps/instance-dir
+    uid: 9731a415-d568-11e9-822a-fa163ea97e2e
 kind: List
 metadata:
   resourceVersion: ""
