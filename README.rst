@@ -1,8 +1,8 @@
 An HTTP backend for transforming coordinates (and, in the future, data) between the HBP core template spaces
 
-A production deployment (following the ``master`` branch) is deployed on https://hbp-spatial-backend.apps.hbp.eu
+A production deployment (following the ``master`` branch) is deployed on https://hbp-spatial-backend.apps.hbp.eu.
 
-The ``dev`` branch is deployed on https://hbp-spatial-backend.apps-dev.hbp.eu
+The ``dev`` branch is deployed on https://hbp-spatial-backend.apps-dev.hbp.eu.
 
 
 Running a local development server::
