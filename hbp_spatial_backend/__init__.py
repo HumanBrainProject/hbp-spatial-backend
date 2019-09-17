@@ -28,19 +28,30 @@ import flask
 # parsed with a regular expression, so keep the syntax simple).
 __version__ = '0.1.0.dev0'
 
-# URL that holds the source code of the backend. This must be changed to
-# point to the exact code of any modified version, in order to comply with
-# the AGPL licence.
 SOURCE_URL = 'https://github.com/HumanBrainProject/hbp-spatial-backend'
+"""URL that holds the source code of the backend.
+
+This must be changed to point to the exact code of any modified version, in
+order to comply with the GNU Affero GPL licence.
+"""
 
 
 class DefaultConfig:
-    CORS_ALLOW_ALL = True
+    # Passed as the 'origins' parameter to flask_cors.CORS, see
+    # https://flask-cors.readthedocs.io/en/latest/api.html#flask_cors.CORS
+    CORS_ORIGINS = '*'
+    # Set to True to enable the /echo endpoint (for debugging)
+    ENABLE_ECHO = False
     # Timeout, in seconds, to wait for AimsApplyTransform to reply before
     # cancelling the request. This is useful if running behind a reverse proxy
     # that has its own timeout anyway
     REQUEST_TIMEOUT = None
-    # Configuration keys without a default value:
+    # Set up werkzeug.middleware.proxy_fix.ProxyFix with the provided keyword
+    # arguments, see
+    # https://werkzeug.palletsprojects.com/en/0.15.x/middleware/proxy_fix/
+    PROXY_FIX = None
+    #
+    # Other configuration keys without a default value:
     # DEFAULT_TRANSFORM_GRAPH: full path to the YAML file that contains the
     #     default transform graph (used by v1 API)
 
@@ -101,15 +112,11 @@ def create_app(test_config=None):
         # load the test config if passed in
         app.config.from_mapping(test_config)
 
-    # ensure the instance folder exists
+    # ensure that the instance folder exists
     try:
         os.makedirs(app.instance_path)
     except OSError:
         pass
-
-    if app.config["CORS_ALLOW_ALL"]:
-        import flask_cors
-        flask_cors.CORS(app)
 
     @app.route("/source")
     def source():
@@ -120,6 +127,19 @@ def create_app(test_config=None):
     @app.route("/health")
     def health():
         return '', 200
+
+    if app.config.get('ENABLE_ECHO'):
+        @app.route('/echo')
+        def echo():
+            app.logger.info('ECHO:\n'
+                            'Headers\n'
+                            '=======\n'
+                            '%s', flask.request.headers)
+            return ''
+
+    if app.config.get('CORS_ORIGINS'):
+        import flask_cors
+        flask_cors.CORS(app, origins=app.config['CORS_ORIGINS'])
 
     from . import api_v1
     app.register_blueprint(api_v1.bp)
