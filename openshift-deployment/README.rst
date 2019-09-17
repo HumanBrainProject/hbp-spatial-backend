@@ -1,11 +1,6 @@
 Deployment on openshift-dev.hbp.eu
 ==================================
 
-The deployment configuration is saved to `openshift-dev-export.yaml` by running
-``oc get -o yaml --export is,bc,dc,svc,route,pvc``. See
-https://collab.humanbrainproject.eu/#/collab/38996/nav/270508 for instructions
-for restoring a working deployment using this snapshot.
-
 For the record, here are the steps that were used to create this OpenShift project:
 
 #. Create the project / navigate to the project
@@ -112,6 +107,7 @@ For the record, here are the steps that were used to create this OpenShift proje
 Deploying to production
 =======================
 
+#. Once the project is successfully deployed on openshift-dev, export the deployment configuration: run ``oc get -o yaml --export is,bc,dc,svc,route,pvc > openshift-dev-export.yaml``.
 #. Process `openshift-dev-export.yaml` as described in https://collab.humanbrainproject.eu/#/collab/38996/nav/270508 , write the result to `openshift-prod-import.yaml`.
 #. Create the project named `hbp-spatial-backend` on https://openshift.hbp.eu/
 #. Log in to https://openshift.hbp.eu/ using the command-line ``oc`` tool, switch to the `hbp-spatial-backend` project
@@ -119,3 +115,5 @@ Deploying to production
 #. Create the needed Config Maps and Secrets
 #. Upload the static data as explained above
 #. Start the build. The deployment should follow automatically.
+
+The production configuration has been exported to `openshift-prod-export.yaml` using ``oc get -o yaml --export is,bc,dc,svc,route,pvc`` (`status` information was manually stripped).

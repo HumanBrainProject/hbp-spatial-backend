@@ -5,15 +5,15 @@ items:
   metadata:
     annotations:
       openshift.io/generated-by: OpenShiftWebConsole
-    creationTimestamp: 2019-09-11T12:36:45Z
+    creationTimestamp: 2019-09-12T14:07:48Z
     generation: 1
     labels:
       app: flask
     name: flask
     namespace: hbp-spatial-backend
-    resourceVersion: "17818721"
+    resourceVersion: "53775437"
     selfLink: /apis/image.openshift.io/v1/namespaces/hbp-spatial-backend/imagestreams/flask
-    uid: d0ec96fd-d490-11e9-acd7-fa163e8fd6a1
+    uid: b33a0094-d566-11e9-822a-fa163ea97e2e
   spec:
     lookupPolicy:
       local: false
@@ -22,15 +22,16 @@ items:
   metadata:
     annotations:
       openshift.io/generated-by: OpenShiftWebConsole
-    creationTimestamp: 2019-09-11T12:36:46Z
+    creationTimestamp: 2019-09-12T14:07:48Z
     labels:
       app: flask
     name: flask
     namespace: hbp-spatial-backend
-    resourceVersion: "17818520"
+    resourceVersion: "53775345"
     selfLink: /apis/build.openshift.io/v1/namespaces/hbp-spatial-backend/buildconfigs/flask
-    uid: d1229925-d490-11e9-acd7-fa163e8fd6a1
+    uid: b35b829c-d566-11e9-822a-fa163ea97e2e
   spec:
+    failedBuildsHistoryLimit: 5
     nodeSelector: null
     output:
       to:
@@ -46,7 +47,6 @@ items:
     runPolicy: Serial
     source:
       git:
-        ref: master
         uri: https://github.com/HumanBrainProject/hbp-spatial-backend.git
       type: Git
     strategy:
@@ -54,6 +54,7 @@ items:
         dockerfilePath: Dockerfile
         forcePull: true
       type: Docker
+    successfulBuildsHistoryLimit: 5
     triggers:
     - generic:
         secret: 27e0b84d966062ca
@@ -66,17 +67,18 @@ items:
   metadata:
     annotations:
       openshift.io/generated-by: OpenShiftWebConsole
-    creationTimestamp: 2019-09-11T12:36:45Z
-    generation: 24
+    creationTimestamp: 2019-09-12T14:07:48Z
+    generation: 3
     labels:
       app: flask
     name: flask
     namespace: hbp-spatial-backend
-    resourceVersion: "17821785"
+    resourceVersion: "53775562"
     selfLink: /apis/apps.openshift.io/v1/namespaces/hbp-spatial-backend/deploymentconfigs/flask
-    uid: d0eda67e-d490-11e9-acd7-fa163e8fd6a1
+    uid: b368180f-d566-11e9-822a-fa163ea97e2e
   spec:
     replicas: 1
+    revisionHistoryLimit: 10
     selector:
       deploymentconfig: flask
     strategy:
@@ -100,7 +102,7 @@ items:
         - env:
           - name: INSTANCE_PATH
             value: /instance
-          image: docker-registry.default.svc:5000/hbp-spatial-backend/flask
+          image: docker-registry.default.svc:5000/hbp-spatial-backend/flask@sha256:8fe1cbce4c8cbf45792137be842adcf54991b2243948daa13833b316ffd4a859
           imagePullPolicy: Always
           livenessProbe:
             failureThreshold: 3
@@ -157,7 +159,7 @@ items:
           kind: ImageStreamTag
           name: flask:latest
           namespace: hbp-spatial-backend
-        lastTriggeredImage: docker-registry.default.svc:5000/hbp-spatial-backend/flask@sha256:57dc17bf75d0d593d37c8d41fc80fe1d2762d1056b8e78a6393fb039e45a398d
+        lastTriggeredImage: docker-registry.default.svc:5000/hbp-spatial-backend/flask@sha256:8fe1cbce4c8cbf45792137be842adcf54991b2243948daa13833b316ffd4a859
       type: ImageChange
     - type: ConfigChange
 - apiVersion: v1
@@ -165,14 +167,14 @@ items:
   metadata:
     annotations:
       openshift.io/generated-by: OpenShiftWebConsole
-    creationTimestamp: 2019-09-11T12:36:46Z
+    creationTimestamp: 2019-09-12T14:07:48Z
     labels:
       app: flask
     name: flask
     namespace: hbp-spatial-backend
-    resourceVersion: "17504493"
+    resourceVersion: "52986941"
     selfLink: /api/v1/namespaces/hbp-spatial-backend/services/flask
-    uid: d1233ad2-d490-11e9-acd7-fa163e8fd6a1
+    uid: b3754372-d566-11e9-822a-fa163ea97e2e
   spec:
     clusterIP: 172.30.20.217
     ports:
@@ -187,16 +189,54 @@ items:
 - apiVersion: v1
   kind: Service
   metadata:
-    creationTimestamp: 2019-09-11T12:59:39Z
+    creationTimestamp: 2019-09-12T14:07:48Z
     labels:
       gluster.kubernetes.io/provisioned-for-pvc: static-data
     name: glusterfs-dynamic-002243cf-d494-11e9-acd7-fa163e8fd6a1
     namespace: hbp-spatial-backend
-    resourceVersion: "17509721"
+    resourceVersion: "52986944"
     selfLink: /api/v1/namespaces/hbp-spatial-backend/services/glusterfs-dynamic-002243cf-d494-11e9-acd7-fa163e8fd6a1
-    uid: 03fa8c7a-d494-11e9-9fef-fa163e42fca5
+    uid: b39f7d4b-d566-11e9-822a-fa163ea97e2e
   spec:
     clusterIP: 172.30.23.17
+    ports:
+    - port: 1
+      protocol: TCP
+      targetPort: 1
+    sessionAffinity: None
+    type: ClusterIP
+- apiVersion: v1
+  kind: Service
+  metadata:
+    creationTimestamp: 2019-09-12T14:07:56Z
+    labels:
+      gluster.kubernetes.io/provisioned-for-pvc: static-data
+    name: glusterfs-dynamic-b3c5c4a1-d566-11e9-822a-fa163ea97e2e
+    namespace: hbp-spatial-backend
+    resourceVersion: "52986972"
+    selfLink: /api/v1/namespaces/hbp-spatial-backend/services/glusterfs-dynamic-b3c5c4a1-d566-11e9-822a-fa163ea97e2e
+    uid: b872b4f6-d566-11e9-822a-fa163ea97e2e
+  spec:
+    clusterIP: 172.30.116.81
+    ports:
+    - port: 1
+      protocol: TCP
+      targetPort: 1
+    sessionAffinity: None
+    type: ClusterIP
+- apiVersion: v1
+  kind: Service
+  metadata:
+    creationTimestamp: 2019-03-13T11:26:31Z
+    labels:
+      gluster.kubernetes.io/provisioned-for-pvc: cross-template-transformations
+    name: glusterfs-dynamic-cross-template-transformations
+    namespace: hbp-spatial-backend
+    resourceVersion: "18942713"
+    selfLink: /api/v1/namespaces/hbp-spatial-backend/services/glusterfs-dynamic-cross-template-transformations
+    uid: d9e6ea4c-4582-11e9-8fde-fa163ea97e2e
+  spec:
+    clusterIP: 172.30.112.176
     ports:
     - port: 1
       protocol: TCP
@@ -208,14 +248,14 @@ items:
   metadata:
     annotations:
       openshift.io/generated-by: OpenShiftWebConsole
-    creationTimestamp: 2019-09-11T12:36:45Z
+    creationTimestamp: 2019-09-12T14:07:48Z
     labels:
       app: flask
     name: flask
     namespace: hbp-spatial-backend
-    resourceVersion: "17504494"
+    resourceVersion: "52986948"
     selfLink: /apis/route.openshift.io/v1/namespaces/hbp-spatial-backend/routes/flask
-    uid: d0eddece-d490-11e9-acd7-fa163e8fd6a1
+    uid: b3b3bb5a-d566-11e9-822a-fa163ea97e2e
   spec:
     host: hbp-spatial-backend.apps.hbp.eu
     port:
@@ -230,17 +270,49 @@ items:
 - apiVersion: v1
   kind: PersistentVolumeClaim
   metadata:
+    annotations:
+      pv.kubernetes.io/bind-completed: "yes"
+      pv.kubernetes.io/bound-by-controller: "yes"
+      volume.beta.kubernetes.io/storage-provisioner: kubernetes.io/glusterfs
+    creationTimestamp: 2019-03-13T11:26:25Z
+    finalizers:
+    - kubernetes.io/pvc-protection
+    name: cross-template-transformations
+    namespace: hbp-spatial-backend
+    resourceVersion: "18942719"
+    selfLink: /api/v1/namespaces/hbp-spatial-backend/persistentvolumeclaims/cross-template-transformations
+    uid: d63a0a9e-4582-11e9-8fde-fa163ea97e2e
+  spec:
+    accessModes:
+    - ReadOnlyMany
+    resources:
+      requests:
+        storage: 5Gi
+    storageClassName: glusterfs-storage
+    volumeName: pvc-d63a0a9e-4582-11e9-8fde-fa163ea97e2e
+- apiVersion: v1
+  kind: PersistentVolumeClaim
+  metadata:
+    annotations:
+      pv.kubernetes.io/bind-completed: "yes"
+      pv.kubernetes.io/bound-by-controller: "yes"
+      volume.beta.kubernetes.io/storage-provisioner: kubernetes.io/glusterfs
+    creationTimestamp: 2019-09-12T14:07:49Z
+    finalizers:
+    - kubernetes.io/pvc-protection
     name: static-data
     namespace: hbp-spatial-backend
-    resourceVersion: "17509726"
+    resourceVersion: "52986979"
     selfLink: /api/v1/namespaces/hbp-spatial-backend/persistentvolumeclaims/static-data
-    uid: 002243cf-d494-11e9-acd7-fa163e8fd6a1
+    uid: b3c5c4a1-d566-11e9-822a-fa163ea97e2e
   spec:
     accessModes:
     - ReadWriteOnce
     resources:
       requests:
         storage: 10Gi
+    storageClassName: glusterfs-storage
+    volumeName: pvc-b3c5c4a1-d566-11e9-822a-fa163ea97e2e
 kind: List
 metadata:
   resourceVersion: ""
