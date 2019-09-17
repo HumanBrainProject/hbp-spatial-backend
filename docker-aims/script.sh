@@ -1,16 +1,16 @@
 # Run from the directory that contains this script (docker-aims)
 
-CASA_DISTRO_DIR=/volatile/bv/casa_distro_repo
+: ${CASA_DEFAULT_REPOSITORY:=/volatile/bv/casa_distro_repo}  # set default value
+export CASA_DEFAULT_REPOSITORY
 
 casa_distro \
-    -r "$CASA_DISTRO_DIR" \
     create \
     distro_name=aims \
     distro_source=opensource \
     branch=bug_fix \
     system=ubuntu-16.04
 
-cat <<'EOF' > "$CASA_DISTRO_DIR"/aims/bug_fix_ubuntu-16.04/conf/bv_maker.cfg
+cat <<'EOF' > "$CASA_DEFAULT_REPOSITORY"/aims/bug_fix_ubuntu-16.04/conf/bv_maker.cfg
 [ source $CASA_SRC ]
   brainvisa brainvisa-cmake $CASA_BRANCH
   brainvisa soma-base $CASA_BRANCH
@@ -33,21 +33,19 @@ cat <<'EOF' > "$CASA_DISTRO_DIR"/aims/bug_fix_ubuntu-16.04/conf/bv_maker.cfg
 EOF
 
 casa_distro \
-    -r "$CASA_DISTRO_DIR" \
     bv_maker \
     distro=aims \
     branch=bug_fix \
     system=ubuntu-16.04
 
 casa_distro \
-    -r "$CASA_DISTRO_DIR" \
     run \
     distro=aims \
     branch=bug_fix \
     system=ubuntu-16.04 \
     /bin/sh -c 'cd /casa/build && make install-runtime BRAINVISA_INSTALL_PREFIX=/casa/install'
 
-cp -a "$CASA_DISTRO_DIR"/aims/bug_fix_ubuntu-16.04/install .
+cp -a "$CASA_DEFAULT_REPOSITORY"/aims/bug_fix_ubuntu-16.04/install .
 
 DOCKER_IMAGE=brainvisa-aims:bug_fix_$(date -Id)
 docker build -t $DOCKER_IMAGE .
