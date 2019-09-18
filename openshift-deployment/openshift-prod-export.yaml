@@ -11,7 +11,7 @@ items:
       app: flask
     name: flask
     namespace: hbp-spatial-backend
-    resourceVersion: "53775437"
+    resourceVersion: "54122381"
     selfLink: /apis/image.openshift.io/v1/namespaces/hbp-spatial-backend/imagestreams/flask
     uid: b33a0094-d566-11e9-822a-fa163ea97e2e
   spec:
@@ -27,7 +27,7 @@ items:
       app: flask
     name: flask
     namespace: hbp-spatial-backend
-    resourceVersion: "53775345"
+    resourceVersion: "54122307"
     selfLink: /apis/build.openshift.io/v1/namespaces/hbp-spatial-backend/buildconfigs/flask
     uid: b35b829c-d566-11e9-822a-fa163ea97e2e
   spec:
@@ -40,7 +40,10 @@ items:
     postCommit:
       script: |
         set -e
-        python3 -m pip install --user /source[tests]
+        # Without PIP_IGNORE_INSTALLED=0 the Debian version of pip would
+        # re-install all dependencies in the user's home directory
+        # (https://github.com/pypa/pip/issues/4222#issuecomment-417672236)
+        PIP_IGNORE_INSTALLED=0 python3 -m pip install --user /source[tests]
         cd /source
         python3 -m pytest
     resources: {}
@@ -68,12 +71,12 @@ items:
     annotations:
       openshift.io/generated-by: OpenShiftWebConsole
     creationTimestamp: 2019-09-12T14:07:48Z
-    generation: 3
+    generation: 9
     labels:
       app: flask
     name: flask
     namespace: hbp-spatial-backend
-    resourceVersion: "53775562"
+    resourceVersion: "54122480"
     selfLink: /apis/apps.openshift.io/v1/namespaces/hbp-spatial-backend/deploymentconfigs/flask
     uid: b368180f-d566-11e9-822a-fa163ea97e2e
   spec:
@@ -102,7 +105,7 @@ items:
         - env:
           - name: INSTANCE_PATH
             value: /instance
-          image: docker-registry.default.svc:5000/hbp-spatial-backend/flask@sha256:8fe1cbce4c8cbf45792137be842adcf54991b2243948daa13833b316ffd4a859
+          image: docker-registry.default.svc:5000/hbp-spatial-backend/flask@sha256:97c4915947695ed26b6122e8787cf1a05b218edab1b58fddd72d02cdceb12489
           imagePullPolicy: Always
           livenessProbe:
             failureThreshold: 3
@@ -159,7 +162,7 @@ items:
           kind: ImageStreamTag
           name: flask:latest
           namespace: hbp-spatial-backend
-        lastTriggeredImage: docker-registry.default.svc:5000/hbp-spatial-backend/flask@sha256:8fe1cbce4c8cbf45792137be842adcf54991b2243948daa13833b316ffd4a859
+        lastTriggeredImage: docker-registry.default.svc:5000/hbp-spatial-backend/flask@sha256:97c4915947695ed26b6122e8787cf1a05b218edab1b58fddd72d02cdceb12489
       type: ImageChange
     - type: ConfigChange
 - apiVersion: v1
@@ -253,7 +256,7 @@ items:
       app: flask
     name: flask
     namespace: hbp-spatial-backend
-    resourceVersion: "52986948"
+    resourceVersion: "54123002"
     selfLink: /apis/route.openshift.io/v1/namespaces/hbp-spatial-backend/routes/flask
     uid: b3b3bb5a-d566-11e9-822a-fa163ea97e2e
   spec:
@@ -261,6 +264,7 @@ items:
     port:
       targetPort: 8080-tcp
     tls:
+      insecureEdgeTerminationPolicy: Redirect
       termination: edge
     to:
       kind: Service
@@ -329,7 +333,7 @@ items:
     creationTimestamp: 2019-09-12T14:21:20Z
     name: instance-dir
     namespace: hbp-spatial-backend
-    resourceVersion: "53926099"
+    resourceVersion: "53927693"
     selfLink: /api/v1/namespaces/hbp-spatial-backend/configmaps/instance-dir
     uid: 9731a415-d568-11e9-822a-fa163ea97e2e
 kind: List

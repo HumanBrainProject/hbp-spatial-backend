@@ -16,6 +16,7 @@ For the record, here are the steps that were used to create this OpenShift proje
       - `dev` as Git Reference
       - Under Routing, enter `hbp-spatial-backend.apps-dev.hbp.eu` as Hostname
       - Under Routing, check `Secure route`
+      - Under Routing, set `Insecure Traffic` to `Redirect`
       - Under `Build Configuration`, uncheck `Launch the first build when the build configuration is created`
 
    #. Hit `Create` at the bottom of the page
