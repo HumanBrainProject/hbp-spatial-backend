@@ -118,6 +118,10 @@ def create_app(test_config=None):
     except OSError:
         pass
 
+    @app.route("/")
+    def root():
+        return flask.redirect(SOURCE_URL)
+
     @app.route("/source")
     def source():
         return flask.redirect(SOURCE_URL)
