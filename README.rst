@@ -15,6 +15,12 @@ The ``dev`` branch is deployed on https://hbp-spatial-backend.apps-dev.hbp.eu. |
 The public deployments are managed by OpenShift clusters, the relevant configuration is described in `<openshift-deployment/>`_.
 
 
+Documentation
+=============
+
+A `draft API documentation <https://docs.google.com/document/d/1XzF2IHjV3a74DirRX0_dOMUn2cWorOwizjMyt9Uy3hU/edit?usp=sharing>`_ is available.
+
+
 Development
 ===========
 
