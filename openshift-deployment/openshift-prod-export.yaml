@@ -11,7 +11,7 @@ items:
       app: flask
     name: flask
     namespace: hbp-spatial-backend
-    resourceVersion: "54122381"
+    resourceVersion: "65327702"
     selfLink: /apis/image.openshift.io/v1/namespaces/hbp-spatial-backend/imagestreams/flask
     uid: b33a0094-d566-11e9-822a-fa163ea97e2e
   spec:
@@ -27,7 +27,7 @@ items:
       app: flask
     name: flask
     namespace: hbp-spatial-backend
-    resourceVersion: "54122307"
+    resourceVersion: "65327578"
     selfLink: /apis/build.openshift.io/v1/namespaces/hbp-spatial-backend/buildconfigs/flask
     uid: b35b829c-d566-11e9-822a-fa163ea97e2e
   spec:
@@ -71,16 +71,16 @@ items:
     annotations:
       openshift.io/generated-by: OpenShiftWebConsole
     creationTimestamp: 2019-09-12T14:07:48Z
-    generation: 9
+    generation: 14
     labels:
       app: flask
     name: flask
     namespace: hbp-spatial-backend
-    resourceVersion: "54122480"
+    resourceVersion: "65329067"
     selfLink: /apis/apps.openshift.io/v1/namespaces/hbp-spatial-backend/deploymentconfigs/flask
     uid: b368180f-d566-11e9-822a-fa163ea97e2e
   spec:
-    replicas: 1
+    replicas: 3
     revisionHistoryLimit: 10
     selector:
       deploymentconfig: flask
@@ -105,7 +105,7 @@ items:
         - env:
           - name: INSTANCE_PATH
             value: /instance
-          image: docker-registry.default.svc:5000/hbp-spatial-backend/flask@sha256:97c4915947695ed26b6122e8787cf1a05b218edab1b58fddd72d02cdceb12489
+          image: docker-registry.default.svc:5000/hbp-spatial-backend/flask@sha256:e1db9fcd78f67d7691f3aca32ed98bd2a39711d4758c459f90174c81f4c272e3
           imagePullPolicy: Always
           livenessProbe:
             failureThreshold: 3
@@ -162,7 +162,7 @@ items:
           kind: ImageStreamTag
           name: flask:latest
           namespace: hbp-spatial-backend
-        lastTriggeredImage: docker-registry.default.svc:5000/hbp-spatial-backend/flask@sha256:97c4915947695ed26b6122e8787cf1a05b218edab1b58fddd72d02cdceb12489
+        lastTriggeredImage: docker-registry.default.svc:5000/hbp-spatial-backend/flask@sha256:e1db9fcd78f67d7691f3aca32ed98bd2a39711d4758c459f90174c81f4c272e3
       type: ImageChange
     - type: ConfigChange
 - apiVersion: v1

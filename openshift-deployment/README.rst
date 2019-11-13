@@ -118,5 +118,6 @@ Deploying to production
 #. Create the needed Config Maps and Secrets
 #. Upload the static data as explained above
 #. Start the build. The deployment should follow automatically.
+#. Increase the number of replicas in order to be more resilient to node failures: go to `Applications` -> `Deployments` -> `flask` -> `Configuration` and change the number of `Replicas` to 3.
 
 The production configuration has been exported to `openshift-prod-export.yaml` using ``oc get -o yaml --export is,bc,dc,svc,route,pvc,cm`` (`status` information was manually stripped).
