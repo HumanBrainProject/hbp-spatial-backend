@@ -46,4 +46,4 @@ USER user
 ###########################
 ENV FLASK_APP hbp_spatial_backend
 EXPOSE 8080
-CMD gunicorn --access-logfile=- --preload 'hbp_spatial_backend:create_app()' --bind=:8080 --worker-class=gevent
+CMD gunicorn --access-logfile=- --preload 'hbp_spatial_backend.wsgi:application' --bind=:8080 --worker-class=gevent
