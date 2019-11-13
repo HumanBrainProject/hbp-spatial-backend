@@ -63,6 +63,7 @@ setuptools.setup(
             "check-manifest",
             "flake8",
             "pep8-naming",
+            "pre-commit",
             "pytest-cov",
             "readme_renderer",
             "tox",
