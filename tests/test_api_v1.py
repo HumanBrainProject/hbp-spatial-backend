@@ -31,13 +31,13 @@ def test_graph_yaml(tmpdir):
 def fake_apply_transform(monkeypatch):
     from hbp_spatial_backend import apply_transform
 
-    def transform_point_mock(source_point, transform_chain, cwd=None):
+    def transform_points_mock(source_points, transform_chain, cwd=None):
         if transform_chain == ['identity']:
-            return tuple(source_point)
+            return [tuple(point) for point in source_points]
         raise RuntimeError('Unexpected call')
 
-    monkeypatch.setattr(apply_transform, 'transform_point',
-                        transform_point_mock)
+    monkeypatch.setattr(apply_transform, 'transform_points',
+                        transform_points_mock)
 
 
 def test_transform_point_request_validation(app, client, test_graph_yaml):
@@ -77,3 +77,28 @@ def test_transform_point_request_validation(app, client, test_graph_yaml):
                                         'source_space': 'nonexistent',
                                         'target_space': 'B'})
     assert response.status_code == 400
+
+
+def test_transform_points_request_validation(app, client, test_graph_yaml):
+    app.config['DEFAULT_TRANSFORM_GRAPH'] = test_graph_yaml
+
+    response = client.get('/v1/transform-points')
+    assert response.status_code == 405
+
+    response = client.post('/v1/transform-points', json={
+        'source_space': 'A',
+        'target_space': 'B',
+        'points': [
+            [1, 2, 3.5],
+            [0, -1, 0.5],
+        ],
+    })
+    assert response.status_code == 200
+    assert response.json == {
+        'target_points': [
+            [1, 2, 3.5],
+            [0, -1, 0.5],
+        ],
+    }
+
+    # TODO: test response to other kinds of malformed requests

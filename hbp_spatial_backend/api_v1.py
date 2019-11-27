@@ -71,6 +71,35 @@ def transform_point():
     return response
 
 
+class TransformPointsRequestSchema(Schema):
+    source_space = fields.Str(required=True)
+    target_space = fields.Str(required=True)
+    points = fields.List(
+        fields.Tuple((fields.Float(), fields.Float(), fields.Float())),
+        required=True,
+    )
+
+
+@bp.route('/transform-points', methods=['POST'])
+def transform_points():
+    params = TransformPointsRequestSchema().load(request.json)
+    source_space = params['source_space']
+    target_space = params['target_space']
+
+    tg = get_transform_graph()
+    try:
+        transform_chain = tg.get_transform_chain(source_space, target_space)
+    except KeyError:
+        return jsonify(
+            {'errors': ['source_space or target_space not found']}
+        ), 400
+    target_points = apply_transform.transform_points(
+        params['points'], transform_chain, cwd=g.transform_graph_cwd)
+
+    response = jsonify({'target_points': target_points})
+    return response
+
+
 @bp.errorhandler(marshmallow.exceptions.ValidationError)
 def handle_validation_error(exc):
     return jsonify({'errors': exc.messages}), 400
