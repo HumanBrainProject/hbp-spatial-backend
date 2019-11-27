@@ -88,7 +88,7 @@ def test_transform_points_request_validation(app, client, test_graph_yaml):
     response = client.post('/v1/transform-points', json={
         'source_space': 'A',
         'target_space': 'B',
-        'points': [
+        'source_points': [
             [1, 2, 3.5],
             [0, -1, 0.5],
         ],

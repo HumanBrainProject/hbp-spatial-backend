@@ -74,7 +74,7 @@ def transform_point():
 class TransformPointsRequestSchema(Schema):
     source_space = fields.Str(required=True)
     target_space = fields.Str(required=True)
-    points = fields.List(
+    source_points = fields.List(
         fields.Tuple((fields.Float(), fields.Float(), fields.Float())),
         required=True,
     )
@@ -94,7 +94,7 @@ def transform_points():
             {'errors': ['source_space or target_space not found']}
         ), 400
     target_points = apply_transform.transform_points(
-        params['points'], transform_chain, cwd=g.transform_graph_cwd)
+        params['source_points'], transform_chain, cwd=g.transform_graph_cwd)
 
     response = jsonify({'target_points': target_points})
     return response
