@@ -40,6 +40,15 @@ def fake_apply_transform(monkeypatch):
                         transform_points_mock)
 
 
+def test_get_graph_yaml(app, client, test_graph_yaml):
+    app.config['DEFAULT_TRANSFORM_GRAPH'] = test_graph_yaml
+    response = client.get('/v1/graph.yaml')
+    assert response.status_code == 200
+    with open(test_graph_yaml, 'rt') as f:
+        graph_yaml_contents = f.read()
+    assert response.get_data(as_text=True) == graph_yaml_contents
+
+
 def test_transform_point_request_validation(app, client, test_graph_yaml):
     app.config['DEFAULT_TRANSFORM_GRAPH'] = test_graph_yaml
     response = client.get('/v1/transform-point')
