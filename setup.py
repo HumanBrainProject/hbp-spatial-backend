@@ -39,6 +39,7 @@ def find_source_url(*file_paths):
 # Remember keep synchronized with the list of dependencies in tox.ini
 tests_require = [
     "pytest",
+    "requests ~= 2.5",
 ]
 
 needs_pytest = {"pytest", "test", "ptr"}.intersection(sys.argv)
