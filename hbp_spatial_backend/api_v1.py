@@ -40,6 +40,12 @@ def get_transform_graph():
     return g.transform_graph
 
 
+@bp.route('/graph.yaml')
+def get_graph_yaml():
+    return flask.send_file(current_app.config['DEFAULT_TRANSFORM_GRAPH'],
+                           mimetype='text/x-yaml')
+
+
 class TransformPointRequestSchema(Schema):
     source_space = fields.Str(required=True)
     target_space = fields.Str(required=True)
