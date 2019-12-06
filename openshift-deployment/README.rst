@@ -44,7 +44,7 @@ For the record, here are the steps that were used to create this OpenShift proje
            # (https://github.com/pypa/pip/issues/4222#issuecomment-417672236)
            PIP_IGNORE_INSTALLED=0 python3 -m pip install --user /source[tests]
            cd /source
-           python3 -m pytest
+           python3 -m pytest tests/
 
       #. Hit `Save`
 
