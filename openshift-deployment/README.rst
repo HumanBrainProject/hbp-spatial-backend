@@ -101,6 +101,7 @@ For the record, here are the steps that were used to create this OpenShift proje
       #. Delete everything related to the temporary pod with ``oc delete all --selector run=dummy``
 
    #. Add Health Checks
+
       #. Go to `Applications` -> `Deployments` -> `flask` -> `Actions` -> `Edit Health Checks`
       #. Add a `Readiness Probe` of type `HTTP GET`, using `Path` = `/health`, setting some `Initial Delay` (e.g. 5 seconds) and `Timeout` (e.g. 10 seconds)
       #. Add a `Liveness Probe` of type `HTTP GET`, using `Path` = `/health`, setting a long `Timeout` (e.g. 60 seconds)
