@@ -16,5 +16,8 @@
 # You should have received a copy of the GNU Affero General Public License
 # along with hbp-spatial-backend. If not, see <https://www.gnu.org/licenses/>.
 
+"""Module containing a Flask application singleton for use by a WSGI server."""
+
+
 import hbp_spatial_backend
 application = hbp_spatial_backend.create_app()

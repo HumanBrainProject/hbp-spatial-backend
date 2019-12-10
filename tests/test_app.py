@@ -26,3 +26,8 @@ def test_config():
 def test_source_link(client):
     response = client.get('/source')
     assert response.status_code == 302
+
+
+def test_wsgi_app():
+    from hbp_spatial_backend.wsgi import application
+    assert application is not None
