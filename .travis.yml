@@ -1,7 +1,7 @@
 version: ~> 1.0
 os: linux
 language: python
-# Support Ubuntu/Python version combinations are documented on
+# Supported Ubuntu/Python version combinations are documented on
 # https://docs.travis-ci.com/user/languages/python/#python-versions
 dist: xenial
 python:

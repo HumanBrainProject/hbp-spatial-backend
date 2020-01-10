@@ -4,6 +4,10 @@ An HTTP backend for transforming coordinates (and, in the future, data) between 
    :target: https://travis-ci.com/HumanBrainProject/hbp-spatial-backend
    :alt: Travis Build Status
 
+.. image:: https://codecov.io/gh/HumanBrainProject/hbp-spatial-backend/branch/master/graph/badge.svg
+   :target: https://codecov.io/gh/HumanBrainProject/hbp-spatial-backend
+   :alt: Coverage Status
+
 
 Public deployments
 ==================
