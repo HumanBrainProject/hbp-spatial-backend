@@ -156,9 +156,6 @@ def create_app(test_config=None):
     smorest_api = flask_smorest.Api(app, spec_kwargs={
         'servers': [
             {
-                'url': '/',
-            },
-            {
                 'url': 'https://hbp-spatial-backend.apps.hbp.eu/',
                 'description': 'Production instance running the *master* '
                                'branch',
