@@ -153,8 +153,17 @@ def create_app(test_config=None):
         import flask_cors
         flask_cors.CORS(app, origins=app.config['CORS_ORIGINS'])
 
+    if app.config['ENV'] == 'development':
+        local_server = [
+            {
+                'url': '/',
+            },
+        ]
+    else:
+        local_server = []
+
     smorest_api = flask_smorest.Api(app, spec_kwargs={
-        'servers': [
+        'servers': local_server + [
             {
                 'url': 'https://hbp-spatial-backend.apps.hbp.eu/',
                 'description': 'Production instance running the *master* '
