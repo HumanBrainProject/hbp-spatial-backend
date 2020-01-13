@@ -19,7 +19,8 @@ RUN python3 -m pip install --no-cache-dir setuptools
 
 RUN python3 -m pip install --no-cache-dir gunicorn[gevent]
 
-ENV LANG=C.UTF-8  # to deal with non-ASCII characters in source
+# to deal with non-ASCII characters in source
+ENV LANG=C.UTF-8
 
 COPY . /source
 RUN python3 -m pip install --no-cache-dir /source
