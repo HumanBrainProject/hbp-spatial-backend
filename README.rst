@@ -8,6 +8,9 @@ An HTTP backend for transforming coordinates (and, in the future, data) between 
    :target: https://codecov.io/gh/HumanBrainProject/hbp-spatial-backend
    :alt: Coverage Status
 
+.. image:: https://img.shields.io/swagger/valid/3.0?label=OpenAPI&specUrl=https%3A%2F%2Fhbp-spatial-backend.apps.hbp.eu%2Fopenapi.json
+   :alt: Swagger Validator
+
 
 Public deployments
 ==================
@@ -22,7 +25,7 @@ The public deployments are managed by OpenShift clusters, the relevant configura
 Documentation
 =============
 
-A `draft API documentation <https://docs.google.com/document/d/1XzF2IHjV3a74DirRX0_dOMUn2cWorOwizjMyt9Uy3hU/edit?usp=sharing>`_ is available.
+The API is documented using the OpenAPI standard (a.k.a. Swagger): see `the ReDoc-generated documentation <https://hbp-spatial-backend.apps.hbp.eu/redoc>`_. `A Swagger UI page <https://hbp-spatial-backend.apps.hbp.eu/swagger-ui>`_ is also available for trying out the API.
 
 
 Development

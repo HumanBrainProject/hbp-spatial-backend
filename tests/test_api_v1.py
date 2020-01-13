@@ -52,7 +52,7 @@ def test_get_graph_yaml(app, client, test_graph_yaml):
 def test_transform_point_request_validation(app, client, test_graph_yaml):
     app.config['DEFAULT_TRANSFORM_GRAPH'] = test_graph_yaml
     response = client.get('/v1/transform-point')
-    assert response.status_code == 400
+    assert response.status_code == 422
     response = client.get('/v1/transform-point',
                           query_string={'source_space': 'A',
                                         'target_space': 'B',
@@ -63,17 +63,17 @@ def test_transform_point_request_validation(app, client, test_graph_yaml):
     response = client.get('/v1/transform-point',
                           query_string={'source_space': 'A',
                                         'target_space': 'B'})
-    assert response.status_code == 400
+    assert response.status_code == 422
 
     response = client.get('/v1/transform-point',
                           query_string={'x': 1, 'y': 2, 'z': 3,
                                         'target_space': 'B'})
-    assert response.status_code == 400
+    assert response.status_code == 422
 
     response = client.get('/v1/transform-point',
                           query_string={'x': 1, 'y': 2, 'z': 3,
                                         'source_space': 'A'})
-    assert response.status_code == 400
+    assert response.status_code == 422
 
     response = client.get('/v1/transform-point',
                           query_string={'x': 1, 'y': 2, 'z': 3,

@@ -22,6 +22,7 @@ import os
 import re
 
 import flask
+import flask_smorest
 
 
 # __version__ and SOURCE_URL are used by setup.py and docs/conf.py (they are
@@ -54,6 +55,13 @@ class DefaultConfig:
     # Other configuration keys without a default value:
     # DEFAULT_TRANSFORM_GRAPH: full path to the YAML file that contains the
     #     default transform graph (used by v1 API)
+    API_VERSION = __version__
+    OPENAPI_VERSION = '3.0.2'  # OpenAPI version to generate
+    OPENAPI_URL_PREFIX = '/'
+    OPENAPI_REDOC_PATH = 'redoc'
+    OPENAPI_REDOC_VERSION = '2.0.0-rc.20'
+    OPENAPI_SWAGGER_UI_PATH = 'swagger-ui'
+    OPENAPI_SWAGGER_UI_VERSION = '3.24.2'
 
 
 # This function has a magic name which is recognized by flask as a factory for
@@ -145,8 +153,48 @@ def create_app(test_config=None):
         import flask_cors
         flask_cors.CORS(app, origins=app.config['CORS_ORIGINS'])
 
+    smorest_api = flask_smorest.Api(app, spec_kwargs={
+        'servers': [
+            {
+                'url': '/',
+            },
+            {
+                'url': 'https://hbp-spatial-backend.apps.hbp.eu/',
+                'description': 'Production instance running the *master* '
+                               'branch',
+            },
+            {
+                'url': 'https://hbp-spatial-backend.apps-dev.hbp.eu/',
+                'description': 'Development instance running the *dev* '
+                               'branch',
+            },
+        ],
+        'info': {
+            'title': 'hbp-spatial-backend',
+            'description': '''\
+HTTP backend for transforming coordinates (and, in the future, data) between
+the HBP core template spaces.
+
+The cross-template transformations are diffeomorphisms, which are computed
+based on the alignment of the folding pattern across the different brains
+(DISCO method) ([Auzias 2011], [Glaunès 2004], [Lebenberg 2018]) and
+maximization of the grey–white matter segmentation overlap (DARTEL) ([Ashburner
+2007]).
+
+[Ashburner 2007]: https://doi.org/10.1016/j.neuroimage.2007.07.007
+[Auzias 2011]: https://doi.org/10.1109/TMI.2011.2108665
+[Glaunès 2004]: https://doi.org/10.1109/CVPR.2004.1315234
+[Lebenberg 2018]: https://doi.org/10.1007/s00429-018-1735-9
+'''
+        },
+        # 'license': {
+        #     'name': 'Apache 2.0',
+        #     'url': 'https://www.apache.org/licenses/LICENSE-2.0.html',
+        # },
+    })
+
     from . import api_v1
-    app.register_blueprint(api_v1.bp)
+    smorest_api.register_blueprint(api_v1.bp)
 
     if app.config.get('PROXY_FIX'):
         from werkzeug.middleware.proxy_fix import ProxyFix

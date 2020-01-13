@@ -55,6 +55,7 @@ setuptools.setup(
     install_requires=[
         "Flask ~= 1.0",
         "Flask-Cors",
+        "flask-smorest ~= 0.18.4",
         "marshmallow ~= 3.0",
         "PyYAML ~= 5.1",
     ],
@@ -73,4 +74,16 @@ setuptools.setup(
     },
     setup_requires=pytest_runner,
     tests_require=tests_require,
+    classifiers=[
+        "Environment :: Web Environment",
+        "Framework :: Flask",
+        "Intended Audience :: Science/Research",
+        "Programming Language :: Python :: 3",
+        "Programming Language :: Python :: 3.5",
+        "Programming Language :: Python :: 3.6",
+        "Programming Language :: Python :: 3.7",
+        "Programming Language :: Python :: 3.8",
+        "Topic :: Internet :: WWW/HTTP :: WSGI :: Application",
+        "Topic :: Scientific/Engineering :: Medical Science Apps.",
+    ],
 )
