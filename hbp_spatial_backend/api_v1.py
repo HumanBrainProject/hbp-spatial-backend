@@ -53,7 +53,7 @@ which are used within this API:
 )
 
 
-def get_transform_graph():
+def _get_transform_graph():
     if 'transform_graph' not in g:
         tg_path = current_app.config['DEFAULT_TRANSFORM_GRAPH']
         g.transform_graph_cwd = os.path.dirname(tg_path)
@@ -138,7 +138,7 @@ def transform_point(args):
     source_space = args['source_space']
     target_space = args['target_space']
 
-    tg = get_transform_graph()
+    tg = _get_transform_graph()
     try:
         transform_chain = tg.get_transform_chain(source_space, target_space)
     except KeyError:
@@ -212,7 +212,7 @@ def transform_points(args):
     source_space = args['source_space']
     target_space = args['target_space']
 
-    tg = get_transform_graph()
+    tg = _get_transform_graph()
     try:
         transform_chain = tg.get_transform_chain(source_space, target_space)
     except KeyError:

@@ -74,14 +74,18 @@ def transform_point(source_point, direct_transform_chain, cwd=None):
 def parse_points_output(stdout_stream):
     """Parse a list of points in the format output by AimsApplyTransform.
 
-    This is generator that yields 3-tuples of Floats.
+    This is a generator that yields 3-tuples of Floats.
     """
-    POINT_RE = re.compile(r'\(\s*([^,]*)\s*,\s*([^,]*)\s*,\s*([^,]*)\s*\)')
+    POINT_RE = re.compile(r'^\s*\(\s*([^,]+)\s*,'
+                          r'\s*([^,]+)\s*,'
+                          r'\s*([^,]+)\s*\)\s*$')
     for line in stdout_stream:
-        match = POINT_RE.search(line)
-        if not match:
-            raise RuntimeError('Cannot parse output of AimsApplyTransform')
-        x = float(match.group(1))
-        y = float(match.group(2))
-        z = float(match.group(3))
-        yield (x, y, z)
+        match = POINT_RE.match(line)
+        if match:
+            x = float(match.group(1))
+            y = float(match.group(2))
+            z = float(match.group(3))
+            yield (x, y, z)
+        # Non-matching lines are discarded. AIMS tends to print messages,
+        # warnings, etc. on stdout, so we are more robust by ignoring output
+        # that we cannot parse.
