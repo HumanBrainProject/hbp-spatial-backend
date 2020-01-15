@@ -1,20 +1,18 @@
-# Copyright 2019 CEA
+# Copyright 2019–2020 CEA
+#
 # Author: Yann Leprince <yann.leprince@cea.fr>
 #
-# This file is part of hbp-spatial-backend.
+# Licensed under the Apache Licence, Version 2.0 (the "Licence");
+# you may not use this file except in compliance with the Licence.
+# You may obtain a copy of the Licence at
 #
-# hbp-spatial-backend is free software: you can redistribute it and/or modify
-# it under the terms of the GNU Affero General Public License as published by
-# the Free Software Foundation, either version 3 of the License, or (at your
-# option) any later version.
+#     http://www.apache.org/licenses/LICENSE-2.0
 #
-# hbp-spatial-backend is distributed in the hope that it will be useful, but
-# WITHOUT ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or
-# FITNESS FOR A PARTICULAR PURPOSE. See the GNU Affero General Public License
-# for more details.
-#
-# You should have received a copy of the GNU Affero General Public License
-# along with hbp-spatial-backend. If not, see <https://www.gnu.org/licenses/>.
+# Unless required by applicable law or agreed to in writing, software
+# distributed under the Licence is distributed on an "AS IS" BASIS,
+# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+# See the Licence for the specific language governing permissions and
+# limitations under the Licence.
 
 """Module containing a Flask application singleton for use by a WSGI server."""
 
