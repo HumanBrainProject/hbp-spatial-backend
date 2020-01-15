@@ -14,6 +14,8 @@
 # See the Licence for the specific language governing permissions and
 # limitations under the Licence.
 
+import logging
+
 
 def test_config():
     from hbp_spatial_backend import create_app
@@ -21,11 +23,92 @@ def test_config():
     assert create_app({'TESTING': True}).testing
 
 
-def test_source_link(client):
+def test_wsgi_app():
+    from hbp_spatial_backend.wsgi import application
+    assert application is not None
+
+
+def test_root_route(client):
+    response = client.get('/')
+    assert response.status_code == 302
+
+
+def test_source_route(client):
     response = client.get('/source')
     assert response.status_code == 302
 
 
-def test_wsgi_app():
-    from hbp_spatial_backend.wsgi import application
-    assert application is not None
+def test_health_route(client):
+    response = client.get('/health')
+    assert response.status_code == 200
+
+
+def test_echo_route():
+    from hbp_spatial_backend import create_app
+    app = create_app({'TESTING': True, 'ENABLE_ECHO': False})
+    with app.test_client() as client:
+        response = client.get('/echo')
+    assert response.status_code == 404
+
+    app = create_app({'TESTING': True, 'ENABLE_ECHO': True})
+    with app.test_client() as client:
+        response = client.get('/echo')
+    assert response.status_code == 200
+
+
+def test_CORS():
+    from hbp_spatial_backend import create_app
+    app = create_app({'TESTING': True, 'CORS_ORIGINS': None})
+    with app.test_client() as client:
+        response = client.get('/')
+    assert 'Access-Control-Allow-Origin' not in response.headers
+    app = create_app({'TESTING': True, 'CORS_ORIGINS': '*'})
+    with app.test_client() as client:
+        response = client.get('/')
+    assert 'Access-Control-Allow-Origin' in response.headers
+    assert response.headers['Access-Control-Allow-Origin'] == '*'
+
+
+def test_proxy_fix(caplog):
+    from hbp_spatial_backend import create_app
+    caplog.set_level(logging.INFO)
+
+    app = create_app({
+        'TESTING': True,
+        'ENABLE_ECHO': True,
+        'PROXY_FIX': None,
+    })
+    with app.test_client() as client:
+        client.get('/echo', headers={'X-Forwarded-Host': 'h.test'})
+    assert 'X-Forwarded-Host: h.test' in caplog.text
+
+    caplog.clear()
+    app = create_app({
+        'TESTING': True,
+        'ENABLE_ECHO': True,
+        'PROXY_FIX': {'x_host': 1},
+    })
+    with app.test_client() as client:
+        client.get('/echo', headers={'X-Forwarded-Host': 'h.test'})
+    assert 'Host: h.test' in caplog.text
+
+
+def test_openapi_spec(app, client):
+    response = client.get('/openapi.json')
+    assert response.status_code == 200
+    assert response.json['openapi'] == app.config['OPENAPI_VERSION']
+    assert 'info' in response.json
+    assert 'title' in response.json['info']
+    assert 'version' in response.json['info']
+    assert 'license' in response.json
+    assert 'servers' in response.json
+    for server_info in response.json['servers']:
+        assert server_info['url'] != '/'
+
+
+def test_openapi_spec_development_mode():
+    from hbp_spatial_backend import create_app
+    app = create_app({'TESTING': True, 'ENV': 'development'})
+    with app.test_client() as client:
+        response = client.get('/openapi.json')
+    assert response.json['servers'][0]['url'] == '/'

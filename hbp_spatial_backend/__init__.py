@@ -67,24 +67,25 @@ def create_app(test_config=None):
     """Instantiate the hbp-spatial-backend Flask application."""
     # logging configuration inspired by
     # http://flask.pocoo.org/docs/1.0/logging/#basic-configuration
-    logging.config.dictConfig({
-        'version': 1,
-        'disable_existing_loggers': False,  # preserve Gunicorn loggers
-        'formatters': {'default': {
-            'format': '[%(asctime)s] [%(process)d] %(levelname)s '
-                      'in %(module)s: %(message)s',
-            'datefmt': '%Y-%m-%d %H:%M:%S %z',
-        }},
-        'handlers': {'wsgi': {
-            'class': 'logging.StreamHandler',
-            'stream': 'ext://flask.logging.wsgi_errors_stream',
-            'formatter': 'default'
-        }},
-        'root': {
-            'level': 'INFO',
-            'handlers': ['wsgi']
-        }
-    })
+    if test_config is None or not test_config.get('TESTING'):
+        logging.config.dictConfig({
+            'version': 1,
+            'disable_existing_loggers': False,  # preserve Gunicorn loggers
+            'formatters': {'default': {
+                'format': '[%(asctime)s] [%(process)d] %(levelname)s '
+                'in %(module)s: %(message)s',
+                'datefmt': '%Y-%m-%d %H:%M:%S %z',
+            }},
+            'handlers': {'wsgi': {
+                'class': 'logging.StreamHandler',
+                'stream': 'ext://flask.logging.wsgi_errors_stream',
+                'formatter': 'default'
+            }},
+            'root': {
+                'level': 'INFO',
+                'handlers': ['wsgi']
+            }
+        })
 
     # If we are running under Gunicorn, set up the root logger to use the same
     # handler as the Gunicorn error stream.
