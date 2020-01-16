@@ -63,7 +63,12 @@ def _get_transform_graph():
 @bp.route('/graph.yaml')
 @bp.response()
 def get_graph_yaml():
-    """Download the graph.yaml file used by this API."""
+    """Download the graph.yaml file used by this API.
+
+    The backend internally uses a YAML file to store the transformation graph
+    which links the template spaces. **The format of this file is subject to
+    change, this endpoint may be modified or removed at any time.**
+    """
     return flask.send_file(current_app.config['DEFAULT_TRANSFORM_GRAPH'],
                            mimetype='text/x-yaml')
 
@@ -73,27 +78,27 @@ class TransformPointRequestSchema(Schema):
         ordered = True
     source_space = fields.Str(
         required=True,
-        description='identifier of the source template space',
+        description='Identifier of the source template space.',
         example='MNI 152 ICBM 2009c Nonlinear Asymmetric',
     )
     target_space = fields.Str(
         required=True,
-        description='identifier of the target template space',
+        description='Identifier of the target template space.',
         example='Big Brain (Histology)',
     )
     x = fields.Float(
         required=True,
-        description='floating-point X coordinate of the source point',
+        description='Floating-point X coordinate of the source point.',
         example=1.0,
     )
     y = fields.Float(
         required=True,
-        description='floating-point Y coordinate of the source point',
+        description='Floating-point Y coordinate of the source point.',
         example=2.0
     )
     z = fields.Float(
         required=True,
-        description='floating-point Z coordinate of the source point',
+        description='Floating-point Z coordinate of the source point.',
         example=3.0,
     )
 
@@ -101,6 +106,8 @@ class TransformPointRequestSchema(Schema):
 class TransformPointResponseSchema(Schema):
     target_point = fields.List(
         fields.Float, validate=Length(equal=3), required=True,
+        description='Coordinates of the transformed point in the target '
+        'space.',
     )
 
 
@@ -157,17 +164,17 @@ class TransformPointsRequestSchema(Schema):
         ordered = True
     source_space = fields.Str(
         required=True,
-        description='identifier of the source template space',
+        description='Identifier of the source template space.',
     )
     target_space = fields.Str(
         required=True,
-        description='identifier of the target template space',
+        description='Identifier of the target template space.',
     )
     source_points = fields.List(
         fields.List(fields.Float, validate=Length(equal=3)),
         required=True,
-        description='list of points to be transformed, each point is a '
-                    '[x, y, z] triple of coordinates',
+        description='List of points to be transformed, each point is a '
+                    '[x, y, z] triple of coordinates.',
     )
 
 
@@ -175,6 +182,9 @@ class TransformPointsResponseSchema(Schema):
     target_points = fields.List(
         fields.List(fields.Float, validate=Length(equal=3)),
         required=True,
+        description='Coordinates of the transformed points in the target '
+                    'space, in the same order as `source_points` in the '
+                    'request.',
     )
 
 
