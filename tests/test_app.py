@@ -81,16 +81,36 @@ def test_proxy_fix(caplog):
     with app.test_client() as client:
         client.get('/echo', headers={'X-Forwarded-Host': 'h.test'})
     assert 'X-Forwarded-Host: h.test' in caplog.text
+    assert 'Host: localhost' in caplog.text
 
-    caplog.clear()
-    app = create_app({
+    app = create_app(test_config={
         'TESTING': True,
-        'ENABLE_ECHO': True,
-        'PROXY_FIX': {'x_host': 1},
+        'PROXY_FIX': {
+            'x_for': 1,
+            'x_proto': 1,
+            'x_host': 1,
+            'x_port': 1,
+            'x_prefix': 1,
+        },
     })
-    with app.test_client() as client:
-        client.get('/echo', headers={'X-Forwarded-Host': 'h.test'})
-    assert 'Host: h.test' in caplog.text
+    called = False
+    @app.route('/test')
+    def test():
+        nonlocal called
+        from flask import request
+        assert request.url == 'https://h.test:1234/toto/test'
+        assert request.access_route[0] == '1.2.3.4'
+        called = True
+        return ''
+    client = app.test_client()
+    client.get('/test', headers={
+        'X-Forwarded-For': '1.2.3.4',
+        'X-Forwarded-Proto': 'https',
+        'X-Forwarded-Host': 'h.test',
+        'X-Forwarded-Port': '1234',
+        'X-Forwarded-Prefix': '/toto',
+    })
+    assert called
 
 
 def test_openapi_spec(app, client):
