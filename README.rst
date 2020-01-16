@@ -9,6 +9,7 @@ An HTTP backend for transforming coordinates (and, in the future, data) between 
    :alt: Coverage Status
 
 .. image:: https://img.shields.io/swagger/valid/3.0?label=OpenAPI&specUrl=https%3A%2F%2Fhbp-spatial-backend.apps.hbp.eu%2Fopenapi.json
+   :target: https://hbp-spatial-backend.apps.hbp.eu/redoc
    :alt: Swagger Validator
 
 
