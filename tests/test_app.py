@@ -100,7 +100,7 @@ def test_openapi_spec(app, client):
     assert 'info' in response.json
     assert 'title' in response.json['info']
     assert 'version' in response.json['info']
-    assert 'license' in response.json
+    assert 'license' in response.json['info']
     assert 'servers' in response.json
     for server_info in response.json['servers']:
         assert server_info['url'] != '/'

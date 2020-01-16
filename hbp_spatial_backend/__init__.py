@@ -189,11 +189,11 @@ maximization of the grey–white matter segmentation overlap (DARTEL) ([Ashburne
 [Auzias 2011]: https://doi.org/10.1109/TMI.2011.2108665
 [Glaunès 2004]: https://doi.org/10.1109/CVPR.2004.1315234
 [Lebenberg 2018]: https://doi.org/10.1007/s00429-018-1735-9
-'''
-        },
-        'license': {
-            'name': 'Apache 2.0',
-            'url': 'https://www.apache.org/licenses/LICENSE-2.0.html',
+''',
+            'license': {
+                'name': 'Apache 2.0',
+                'url': 'https://www.apache.org/licenses/LICENSE-2.0.html',
+            },
         },
     })
 
