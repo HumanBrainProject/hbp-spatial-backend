@@ -88,17 +88,17 @@ class TransformPointRequestSchema(Schema):
     )
     x = fields.Float(
         required=True,
-        description='Floating-point X coordinate of the source point.',
+        description='X coordinate of the source point, in millimetres.',
         example=1.0,
     )
     y = fields.Float(
         required=True,
-        description='Floating-point Y coordinate of the source point.',
+        description='Y coordinate of the source point, in millimetres.',
         example=2.0
     )
     z = fields.Float(
         required=True,
-        description='Floating-point Z coordinate of the source point.',
+        description='Z coordinate of the source point, in millimetres.',
         example=3.0,
     )
 
@@ -107,7 +107,7 @@ class TransformPointResponseSchema(Schema):
     target_point = fields.List(
         fields.Float, validate=Length(equal=3), required=True,
         description='Coordinates of the transformed point in the target '
-        'space.',
+        'space, expressed as [x, y, z], in millimetres.',
     )
 
 
@@ -173,8 +173,8 @@ class TransformPointsRequestSchema(Schema):
     source_points = fields.List(
         fields.List(fields.Float, validate=Length(equal=3)),
         required=True,
-        description='List of points to be transformed, each point is a '
-                    '[x, y, z] triple of coordinates.',
+        description='List of points to be transformed. Each point is a '
+                    '[x, y, z] triple of coordinates in millimetres.',
     )
 
 
@@ -184,7 +184,8 @@ class TransformPointsResponseSchema(Schema):
         required=True,
         description='Coordinates of the transformed points in the target '
                     'space, in the same order as `source_points` in the '
-                    'request.',
+                    'request. Each point is returned as a [x, y, z] triple '
+                    'of coordinates in millimetres',
     )
 
 
