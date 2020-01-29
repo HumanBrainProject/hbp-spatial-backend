@@ -5,15 +5,15 @@ items:
   metadata:
     annotations:
       openshift.io/generated-by: OpenShiftWebConsole
-    creationTimestamp: 2019-09-12T14:07:48Z
+    creationTimestamp: 2020-01-29T10:42:20Z
     generation: 1
     labels:
       app: flask
     name: flask
     namespace: hbp-spatial-backend
-    resourceVersion: "65327702"
+    resourceVersion: "4734542"
     selfLink: /apis/image.openshift.io/v1/namespaces/hbp-spatial-backend/imagestreams/flask
-    uid: b33a0094-d566-11e9-822a-fa163ea97e2e
+    uid: 06baee73-4284-11ea-89e4-fa163e061b5f
   spec:
     lookupPolicy:
       local: false
@@ -22,14 +22,14 @@ items:
   metadata:
     annotations:
       openshift.io/generated-by: OpenShiftWebConsole
-    creationTimestamp: 2019-09-12T14:07:48Z
+    creationTimestamp: 2020-01-29T10:42:20Z
     labels:
       app: flask
     name: flask
     namespace: hbp-spatial-backend
-    resourceVersion: "65327578"
+    resourceVersion: "4734086"
     selfLink: /apis/build.openshift.io/v1/namespaces/hbp-spatial-backend/buildconfigs/flask
-    uid: b35b829c-d566-11e9-822a-fa163ea97e2e
+    uid: 06c5d5dd-4284-11ea-89e4-fa163e061b5f
   spec:
     failedBuildsHistoryLimit: 5
     nodeSelector: null
@@ -70,15 +70,15 @@ items:
   metadata:
     annotations:
       openshift.io/generated-by: OpenShiftWebConsole
-    creationTimestamp: 2019-09-12T14:07:48Z
-    generation: 14
+    creationTimestamp: 2020-01-29T10:42:20Z
+    generation: 2
     labels:
       app: flask
     name: flask
     namespace: hbp-spatial-backend
-    resourceVersion: "65329067"
+    resourceVersion: "4734913"
     selfLink: /apis/apps.openshift.io/v1/namespaces/hbp-spatial-backend/deploymentconfigs/flask
-    uid: b368180f-d566-11e9-822a-fa163ea97e2e
+    uid: 06cef084-4284-11ea-89e4-fa163e061b5f
   spec:
     replicas: 3
     revisionHistoryLimit: 10
@@ -105,7 +105,7 @@ items:
         - env:
           - name: INSTANCE_PATH
             value: /instance
-          image: docker-registry.default.svc:5000/hbp-spatial-backend/flask@sha256:e1db9fcd78f67d7691f3aca32ed98bd2a39711d4758c459f90174c81f4c272e3
+          image: docker-registry.default.svc:5000/hbp-spatial-backend/flask@sha256:6e938f8844f80f6ada3552bf37b28125477cb5e022d11a82b02ce38347a1397e
           imagePullPolicy: Always
           livenessProbe:
             failureThreshold: 3
@@ -162,7 +162,7 @@ items:
           kind: ImageStreamTag
           name: flask:latest
           namespace: hbp-spatial-backend
-        lastTriggeredImage: docker-registry.default.svc:5000/hbp-spatial-backend/flask@sha256:e1db9fcd78f67d7691f3aca32ed98bd2a39711d4758c459f90174c81f4c272e3
+        lastTriggeredImage: docker-registry.default.svc:5000/hbp-spatial-backend/flask@sha256:6e938f8844f80f6ada3552bf37b28125477cb5e022d11a82b02ce38347a1397e
       type: ImageChange
     - type: ConfigChange
 - apiVersion: v1
@@ -170,14 +170,14 @@ items:
   metadata:
     annotations:
       openshift.io/generated-by: OpenShiftWebConsole
-    creationTimestamp: 2019-09-12T14:07:48Z
+    creationTimestamp: 2020-01-29T10:42:20Z
     labels:
       app: flask
     name: flask
     namespace: hbp-spatial-backend
-    resourceVersion: "52986941"
+    resourceVersion: "4702588"
     selfLink: /api/v1/namespaces/hbp-spatial-backend/services/flask
-    uid: b3754372-d566-11e9-822a-fa163ea97e2e
+    uid: 06d975d4-4284-11ea-89e4-fa163e061b5f
   spec:
     clusterIP: 172.30.20.217
     ports:
@@ -192,14 +192,14 @@ items:
 - apiVersion: v1
   kind: Service
   metadata:
-    creationTimestamp: 2019-09-12T14:07:48Z
+    creationTimestamp: 2020-01-29T10:42:20Z
     labels:
       gluster.kubernetes.io/provisioned-for-pvc: static-data
     name: glusterfs-dynamic-002243cf-d494-11e9-acd7-fa163e8fd6a1
     namespace: hbp-spatial-backend
-    resourceVersion: "52986944"
+    resourceVersion: "4702590"
     selfLink: /api/v1/namespaces/hbp-spatial-backend/services/glusterfs-dynamic-002243cf-d494-11e9-acd7-fa163e8fd6a1
-    uid: b39f7d4b-d566-11e9-822a-fa163ea97e2e
+    uid: 06e2afeb-4284-11ea-89e4-fa163e061b5f
   spec:
     clusterIP: 172.30.23.17
     ports:
@@ -211,14 +211,14 @@ items:
 - apiVersion: v1
   kind: Service
   metadata:
-    creationTimestamp: 2019-09-12T14:07:56Z
+    creationTimestamp: 2020-01-29T10:42:20Z
     labels:
       gluster.kubernetes.io/provisioned-for-pvc: static-data
     name: glusterfs-dynamic-b3c5c4a1-d566-11e9-822a-fa163ea97e2e
     namespace: hbp-spatial-backend
-    resourceVersion: "52986972"
+    resourceVersion: "4702593"
     selfLink: /api/v1/namespaces/hbp-spatial-backend/services/glusterfs-dynamic-b3c5c4a1-d566-11e9-822a-fa163ea97e2e
-    uid: b872b4f6-d566-11e9-822a-fa163ea97e2e
+    uid: 06ed8135-4284-11ea-89e4-fa163e061b5f
   spec:
     clusterIP: 172.30.116.81
     ports:
@@ -230,14 +230,14 @@ items:
 - apiVersion: v1
   kind: Service
   metadata:
-    creationTimestamp: 2019-03-13T11:26:31Z
+    creationTimestamp: 2020-01-29T10:42:20Z
     labels:
       gluster.kubernetes.io/provisioned-for-pvc: cross-template-transformations
     name: glusterfs-dynamic-cross-template-transformations
     namespace: hbp-spatial-backend
-    resourceVersion: "18942713"
+    resourceVersion: "4702595"
     selfLink: /api/v1/namespaces/hbp-spatial-backend/services/glusterfs-dynamic-cross-template-transformations
-    uid: d9e6ea4c-4582-11e9-8fde-fa163ea97e2e
+    uid: 06f6dce8-4284-11ea-89e4-fa163e061b5f
   spec:
     clusterIP: 172.30.112.176
     ports:
@@ -251,14 +251,14 @@ items:
   metadata:
     annotations:
       openshift.io/generated-by: OpenShiftWebConsole
-    creationTimestamp: 2019-09-12T14:07:48Z
+    creationTimestamp: 2020-01-29T10:42:20Z
     labels:
       app: flask
     name: flask
     namespace: hbp-spatial-backend
-    resourceVersion: "54123002"
+    resourceVersion: "4702598"
     selfLink: /apis/route.openshift.io/v1/namespaces/hbp-spatial-backend/routes/flask
-    uid: b3b3bb5a-d566-11e9-822a-fa163ea97e2e
+    uid: 0705d9b3-4284-11ea-89e4-fa163e061b5f
   spec:
     host: hbp-spatial-backend.apps.hbp.eu
     port:
@@ -277,46 +277,23 @@ items:
     annotations:
       pv.kubernetes.io/bind-completed: "yes"
       pv.kubernetes.io/bound-by-controller: "yes"
-      volume.beta.kubernetes.io/storage-provisioner: kubernetes.io/glusterfs
-    creationTimestamp: 2019-03-13T11:26:25Z
-    finalizers:
-    - kubernetes.io/pvc-protection
-    name: cross-template-transformations
-    namespace: hbp-spatial-backend
-    resourceVersion: "18942719"
-    selfLink: /api/v1/namespaces/hbp-spatial-backend/persistentvolumeclaims/cross-template-transformations
-    uid: d63a0a9e-4582-11e9-8fde-fa163ea97e2e
-  spec:
-    accessModes:
-    - ReadOnlyMany
-    resources:
-      requests:
-        storage: 5Gi
-    storageClassName: glusterfs-storage
-    volumeName: pvc-d63a0a9e-4582-11e9-8fde-fa163ea97e2e
-- apiVersion: v1
-  kind: PersistentVolumeClaim
-  metadata:
-    annotations:
-      pv.kubernetes.io/bind-completed: "yes"
-      pv.kubernetes.io/bound-by-controller: "yes"
-      volume.beta.kubernetes.io/storage-provisioner: kubernetes.io/glusterfs
-    creationTimestamp: 2019-09-12T14:07:49Z
+      volume.beta.kubernetes.io/storage-class: managed-nfs-storage
+      volume.beta.kubernetes.io/storage-provisioner: fuseim.pri/ifs
+    creationTimestamp: 2020-01-29T12:08:41Z
     finalizers:
     - kubernetes.io/pvc-protection
     name: static-data
     namespace: hbp-spatial-backend
-    resourceVersion: "52986979"
+    resourceVersion: "4721536"
     selfLink: /api/v1/namespaces/hbp-spatial-backend/persistentvolumeclaims/static-data
-    uid: b3c5c4a1-d566-11e9-822a-fa163ea97e2e
+    uid: 16cede9f-4290-11ea-89e4-fa163e061b5f
   spec:
     accessModes:
     - ReadWriteOnce
     resources:
       requests:
         storage: 10Gi
-    storageClassName: glusterfs-storage
-    volumeName: pvc-b3c5c4a1-d566-11e9-822a-fa163ea97e2e
+    volumeName: pvc-16cede9f-4290-11ea-89e4-fa163e061b5f
 - apiVersion: v1
   data:
     config.py: |
@@ -330,12 +307,12 @@ items:
       DEFAULT_TRANSFORM_GRAPH = '/static-data/DISCO_20181004_sigV30_DARTEL_20181004_reg_x4/graph.yaml'
   kind: ConfigMap
   metadata:
-    creationTimestamp: 2019-09-12T14:21:20Z
+    creationTimestamp: 2020-01-29T10:42:21Z
     name: instance-dir
     namespace: hbp-spatial-backend
-    resourceVersion: "53927693"
+    resourceVersion: "4702603"
     selfLink: /api/v1/namespaces/hbp-spatial-backend/configmaps/instance-dir
-    uid: 9731a415-d568-11e9-822a-fa163ea97e2e
+    uid: 072157df-4284-11ea-89e4-fa163e061b5f
 kind: List
 metadata:
   resourceVersion: ""
