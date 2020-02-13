@@ -1,5 +1,5 @@
-Deployment on openshift-dev.hbp.eu
-==================================
+Deployment on okd-dev.hbp.eu
+============================
 
 For the record, here are the steps that were used to create this OpenShift project:
 
@@ -89,7 +89,7 @@ For the record, here are the steps that were used to create this OpenShift proje
 
    #. Upload the static data (transformation graph and deformation fields). We follow the method described on https://blog.openshift.com/transferring-files-in-and-out-of-containers-in-openshift-part-3/
 
-      #. Install the OpenShift Command-Line Tools by following the instructions on https://openshift-dev.hbp.eu/console/command-line
+      #. Install the OpenShift Command-Line Tools by following the instructions on https://okd-dev.hbp.eu/console/command-line
       #. Log in using the CLI (Under your name on the top right corner, hit `Copy Login Command` and paste it into a terminal)
       #. Switch to the project (``oc project hbp-spatial-transform``)
       #. Run a dummy pod for rsync transfer with ``oc run dummy --image ylep/oc-rsync-transfer``
@@ -111,7 +111,7 @@ For the record, here are the steps that were used to create this OpenShift proje
 Deploying to production
 =======================
 
-#. Once the project is successfully deployed on openshift-dev, export the deployment configuration: run ``oc get -o yaml --export is,bc,dc,svc,route,pvc,cm > openshift-dev-export.yaml``.
+#. Once the project is successfully deployed on okd-dev, export the deployment configuration: run ``oc get -o yaml --export is,bc,dc,svc,route,pvc,cm > openshift-dev-export.yaml``.
 #. Process `openshift-dev-export.yaml` as described in https://collab.humanbrainproject.eu/#/collab/38996/nav/270508 , write the result to `openshift-prod-import.yaml`.
 #. Create the project named `hbp-spatial-backend` on https://okd.hbp.eu/
 #. Log in to https://okd.hbp.eu/ using the command-line ``oc`` tool, switch to the `hbp-spatial-backend` project with ``oc project hbp-spatial-backend``
