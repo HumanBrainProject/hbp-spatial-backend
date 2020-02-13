@@ -112,9 +112,9 @@ Deploying to production
 =======================
 
 #. Once the project is successfully deployed on okd-dev, export the deployment configuration: run ``oc get -o yaml --export is,bc,dc,svc,route,pvc,cm > openshift-dev-export.yaml``.
-#. Process `openshift-dev-export.yaml` as described in https://collab.humanbrainproject.eu/#/collab/38996/nav/270508 , write the result to `openshift-prod-import.yaml`.
+#. Process `openshift-dev-export.yaml` as described in https://collab.humanbrainproject.eu/#/collab/38996/nav/270508, write the result to `openshift-prod-import.yaml`. Also, edit the route to use the production URL.
 #. Create the project named `hbp-spatial-backend` on https://okd.hbp.eu/
-#. Log in to https://okd.hbp.eu/ using the command-line ``oc`` tool, switch to the `hbp-spatial-backend` project with ``oc project hbp-spatial-backend``
+#. Log in using the command-line ``oc`` tool (https://okd.hbp.eu/console/command-line), switch to the `hbp-spatial-backend` project with ``oc project hbp-spatial-backend``
 #. Import the objects from your edited YAML file using ``oc create -f openshift-prod-import.yaml``
 #. Re-create the Persistent Volume Claims.
 #. Create the needed Config Maps and Secrets (none for this project).
