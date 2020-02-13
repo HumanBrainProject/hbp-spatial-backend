@@ -8,22 +8,20 @@ As an example, these are the instructions for restoring the production deploymen
 #. Log in using the command-line ``oc`` tool (https://okd.hbp.eu/console/command-line), switch to the `hbp-spatial-backend` project with ``oc project hbp-spatial-backend``
 #. Import the objects from your edited YAML file using ``oc create -f openshift-prod-export.yaml``
 #. Re-create the Persistent Volume Claims and upload the data (see below).
-#. Edit the Config Maps if needed, re-create the needed Secrets (none for this project).
+#. Edit the Config Maps if needed, re-create the needed Secrets (namely ``github-webhook-secret``).
 #. Start the build. The deployment should follow automatically.
 #. For production, increase the number of replicas in order to be more resilient to node failures: go to `Applications` -> `Deployments` -> `flask` -> `Configuration` and change the number of `Replicas` to 3.
 #. Go to `Builds` -> `Builds` -> `flask` -> `Configuration`, copy the GitHub Webhook URL and configure it into the GitHub repository (https://github.com/HumanBrainProject/hbp-spatial-backend/settings/hooks). Make sure to set the Content Type to ``application/json``.
 
-The deployment configuration is saved to `<openshift-prod-export.yaml>`_ by running ``oc get -o yaml --export is,bc,dc,svc,route,pvc,cm,horizontalpodautoscaler > openshift-prod-export.yaml`` (`status` information is stripped manually, see https://collab.humanbrainproject.eu/#/collab/38996/nav/270508 for other edits that may be necessary).
+The deployment configuration is saved to `<openshift-prod-export.yaml>`_ by running ``oc get -o yaml --export is,bc,dc,svc,route,pvc,cm,horizontalpodautoscaler > openshift-prod-export.yaml`` (`status`, `resourceVersion`, `generation`, `@sha256`, `PersistentVolumeClaim` metadata (`volumeName`, `finalizers`, `annotations`) and `secret` information is stripped manually, see https://collab.humanbrainproject.eu/#/collab/38996/nav/270508 for other edits that may be necessary).
 
 
 Deployment on okd-dev.hbp.eu
 ============================
 
-The deployment configuration is saved to `<openshift-dev-export.yaml>`_ by running ``oc get -o yaml --export is,bc,dc,svc,route,pvc,cm,horizontalpodautoscaler > openshift-dev-export.yaml`` (`status` information is stripped manually, see https://collab.humanbrainproject.eu/#/collab/38996/nav/270508 for other edits that may be necessary).
-
 For the record, here are the steps that were used to create this OpenShift project:
 
-#. Create the project / navigate to the project
+#. Create the project / navigate to the project on https://okd-dev.hbp.eu/
 
 #. Configure the Flask instance
 
@@ -41,6 +39,9 @@ For the record, here are the steps that were used to create this OpenShift proje
 
    #. Hit `Create` at the bottom of the page
    #. Follow the instructions to configure the GitHub webhook
+
+      #. (optional) If you are going to publish the OpenShift deployment configuration, make sure that the webhook secrets refer to a real `Secret` resource (e.g. ``github-webhook-secret``) instead of being stored in clear-text in the `BuildConfig` object.
+
    #. Change the build configuration to use the `Docker` build strategy:
 
       #. Go to `Builds` -> `Builds` -> `flask` -> `Actions` -> `Edit YAML`
