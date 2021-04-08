@@ -69,6 +69,8 @@ def get_graph_yaml():
     which links the template spaces. **The format of this file is subject to
     change, this endpoint may be modified or removed at any time.**
     """
+    logger.error('default path to graph.yaml: %s', current_app.config['DEFAULT_TRANSFORM_GRAPH'])
+    logger.error('instance path: %s', current_app.instance_path)
     return flask.send_file(current_app.config['DEFAULT_TRANSFORM_GRAPH'],
                            mimetype='text/x-yaml')
 

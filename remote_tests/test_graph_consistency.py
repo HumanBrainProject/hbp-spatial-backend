@@ -21,9 +21,9 @@ import requests
 
 @pytest.fixture
 def base_url():
-    return 'https://hbp-spatial-backend.apps.hbp.eu/'
+    # return 'https://hbp-spatial-backend.apps.hbp.eu/'
     # return 'https://hbp-spatial-backend.apps-dev.hbp.eu/'
-    # return 'http://localhost:5000/'
+    return 'http://127.0.0.1:5000/'
 
 
 class TransformRequester:
