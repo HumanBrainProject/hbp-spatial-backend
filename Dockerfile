@@ -12,7 +12,7 @@ RUN apt-get update \
     && rm -rf /var/lib/apt/lists/*
 
 # Upgrade pip as recommended
-RUN python3 -m pip install --no-cache-dir --upgrade pip
+RUN python3 -m pip install --no-cache-dir --upgrade pip --force
 
 # Setuptools is needed to import from source
 RUN python3 -m pip install --no-cache-dir setuptools
