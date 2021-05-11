@@ -28,7 +28,6 @@ from marshmallow.validate import Length
 from hbp_spatial_backend import apply_transform
 from hbp_spatial_backend.transform_graph import TransformGraph
 
-
 logger = logging.getLogger(__name__)
 
 bp = flask_smorest.Blueprint(
@@ -69,7 +68,8 @@ def get_graph_yaml():
     which links the template spaces. **The format of this file is subject to
     change, this endpoint may be modified or removed at any time.**
     """
-    logger.error('default path to graph.yaml: %s', current_app.config['DEFAULT_TRANSFORM_GRAPH'])
+    logger.error('default path to graph.yaml: %s',
+                 current_app.config['DEFAULT_TRANSFORM_GRAPH'])
     logger.error('instance path: %s', current_app.instance_path)
     return flask.send_file(current_app.config['DEFAULT_TRANSFORM_GRAPH'],
                            mimetype='text/x-yaml')
@@ -78,6 +78,7 @@ def get_graph_yaml():
 class TransformPointRequestSchema(Schema):
     class Meta:
         ordered = True
+
     source_space = fields.Str(
         required=True,
         description='Identifier of the source template space.',
@@ -109,7 +110,7 @@ class TransformPointResponseSchema(Schema):
     target_point = fields.List(
         fields.Float, validate=Length(equal=3), required=True,
         description='Coordinates of the transformed point in the target '
-        'space, expressed as [x, y, z], in millimetres.',
+                    'space, expressed as [x, y, z], in millimetres.',
     )
 
 
@@ -117,6 +118,7 @@ class ErrorResponseSchema(Schema):
     class Meta:
         unknown = marshmallow.INCLUDE
         strict = False
+
     code = fields.Integer(required=False)
     status = fields.String(required=False)
     message = fields.String(required=False)
@@ -164,6 +166,7 @@ def transform_point(args):
 class TransformPointsRequestSchema(Schema):
     class Meta:
         ordered = True
+
     source_space = fields.Str(
         required=True,
         description='Identifier of the source template space.',
@@ -188,6 +191,32 @@ class TransformPointsResponseSchema(Schema):
                     'space, in the same order as `source_points` in the '
                     'request. Each point is returned as a [x, y, z] triple '
                     'of coordinates in millimetres',
+    )
+
+
+class GetTransformCommandRequestSchema(Schema):
+    class Meta:
+        ordered = True
+
+    only_points = fields.Boolean(
+        required=True,
+        description='States if inputs are only points (True) or not (False).',
+    )
+    source_space = fields.Str(
+        required=True,
+        description='Identifier of the source template space.',
+    )
+    target_space = fields.Str(
+        required=True,
+        description='Identifier of the target template space.',
+    )
+
+
+class GetTransformCommandResponseSchema(Schema):
+    transform_command = fields.Str(
+        required=True,
+        description='Aims command from source space to target space, '
+                    'given as string',
     )
 
 
@@ -232,3 +261,48 @@ def transform_points(args):
         args['source_points'], transform_chain, cwd=g.transform_graph_cwd)
 
     return {'target_points': target_points}
+
+
+@bp.route('/get_transform_command')
+@bp.arguments(GetTransformCommandRequestSchema, location='query')
+# The error responses come first, the schemas are only used for
+# documentation
+@bp.response(ErrorResponseSchema,
+             code=400,
+             example={'message': 'source_space or target_space not found'})
+# Code 422 is raised by webargs for request validation errors
+@bp.response(ErrorResponseSchema,
+             code=422, description='Semantically invalid request')
+# The successful response must be the last response decorator, its schema
+# is used for serializing the response.
+@bp.response(GetTransformCommandResponseSchema,
+             example={
+                 'transform_command': "AimsApplyTransform ...",
+             })
+def get_transform_command(args):
+    """Get the transform command."""
+    only_points = args['only_points']
+    source_space = args['source_space']
+    target_space = args['target_space']
+
+    tg = _get_transform_graph()
+    try:
+        direct_transform_chain = tg.get_transform_chain(source_space,
+                                                 target_space)
+        inverse_transform_chain = tg.get_transform_chain(target_space,
+                                                    source_space)
+    except KeyError:
+        abort(400, errors=['source_space or target_space not found'])
+
+    transform_command = apply_transform.get_transform_command(
+        only_points=only_points,
+        direct_transform_chain=direct_transform_chain,
+        inverse_target_chain=inverse_transform_chain)
+
+    response = jsonify(GetTransformCommandResponseSchema().dump({
+        'transform_command': transform_command,
+    }))
+
+    response.cache_control.public = True
+    response.cache_control.max_age = 86400  # 1 day
+    return response

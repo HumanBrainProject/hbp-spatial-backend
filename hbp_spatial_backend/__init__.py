@@ -61,6 +61,9 @@ class DefaultConfig:
     OPENAPI_SWAGGER_UI_VERSION = '3.24.2'
     DEFAULT_TRANSFORM_GRAPH = '/home/jc225751/Program/hbp-spatial-backend/instance/graph.yaml'
 
+
+
+
 # This function has a magic name which is recognized by flask as a factory for
 # the main app.
 def create_app(test_config=None):
@@ -124,7 +127,7 @@ def create_app(test_config=None):
     except OSError:
         pass
 
-    print(app.instance_path)
+    app.logger.info("Instance path : %s", app.instance_path)
 
     @app.route("/")
     def root():
