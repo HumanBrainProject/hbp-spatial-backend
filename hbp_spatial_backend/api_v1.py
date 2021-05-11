@@ -198,17 +198,25 @@ class GetTransformCommandRequestSchema(Schema):
     class Meta:
         ordered = True
 
+    source_space = fields.Str(
+        required=True,
+        description='Identifier of the source template space.',
+        example='MNI 152 ICBM 2009c Nonlinear Asymmetric',
+    )
     only_points = fields.Boolean(
         required=True,
         description='States if inputs are only points (True) or not (False).',
+        example='False',
     )
     source_space = fields.Str(
         required=True,
         description='Identifier of the source template space.',
+        example='MNI 152 ICBM 2009c Nonlinear Asymmetric',
     )
     target_space = fields.Str(
         required=True,
         description='Identifier of the target template space.',
+        example='MNI Colin 27',
     )
 
 
