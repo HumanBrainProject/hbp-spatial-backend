@@ -64,6 +64,7 @@ def transform_points(source_points, direct_transform_chain, cwd=None):
 
 
 def get_transform_command(only_points,
+                          input_coords,
                           direct_transform_chain,
                           inverse_target_chain):
     transform_params = []
@@ -83,6 +84,7 @@ def get_transform_command(only_points,
         cmd = [
             'AimsApplyTransform'
         ]
+        cmd.extend(['--input_coords', input_coords])
     cmd.extend(transform_params)
 
     transform_command = ' '.join(cmd)

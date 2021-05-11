@@ -204,7 +204,7 @@ class GetTransformCommandRequestSchema(Schema):
         example='MNI 152 ICBM 2009c Nonlinear Asymmetric',
     )
     only_points = fields.Boolean(
-        required=True,
+        required=False,
         description='States if inputs are only points (True) or not (False).',
         example='False',
     )
@@ -217,6 +217,12 @@ class GetTransformCommandRequestSchema(Schema):
         required=True,
         description='Identifier of the target template space.',
         example='MNI Colin 27',
+    )
+    input_coords = fields.Str(
+        required=True,
+        description="How to interpret coordinates in the input image w.r.t. "
+                    "the transformations written in the image header.",
+        example='AIMS',
     )
 
 
@@ -292,6 +298,7 @@ def get_transform_command(args):
     only_points = args['only_points']
     source_space = args['source_space']
     target_space = args['target_space']
+    input_coords = args['input_coords']
 
     tg = _get_transform_graph()
     try:
@@ -304,6 +311,7 @@ def get_transform_command(args):
 
     transform_command = apply_transform.get_transform_command(
         only_points=only_points,
+        input_coords=input_coords,
         direct_transform_chain=direct_transform_chain,
         inverse_target_chain=inverse_transform_chain)
 
