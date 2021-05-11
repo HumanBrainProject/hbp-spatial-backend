@@ -8,14 +8,20 @@ RUN apt-get update \
     && apt-get install -y --no-install-recommends --no-install-suggests \
         python3 \
         python3-pip \
+	wget \
+	python3-dev \
+	build-essential \
     && apt-get clean \
     && rm -rf /var/lib/apt/lists/*
 
 # Upgrade pip as recommended
-RUN python3 -m pip install --no-cache-dir --upgrade pip --force
+RUN wget https://bootstrap.pypa.io/pip/3.5/get-pip.py -O ./get-pip.py
+RUN python3 ./get-pip.py
+
+RUN python3 -m pip install p5py PEP517
 
 # Setuptools is needed to import from source
-RUN python3 -m pip install --no-cache-dir setuptools
+RUN python3 -m pip install --no-cache-dir setuptools wheel
 
 RUN python3 -m pip install --no-cache-dir gunicorn[gevent]
 
