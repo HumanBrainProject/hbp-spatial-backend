@@ -59,9 +59,7 @@ class DefaultConfig:
     OPENAPI_REDOC_VERSION = '2.0.0-rc.20'
     OPENAPI_SWAGGER_UI_PATH = 'swagger-ui'
     OPENAPI_SWAGGER_UI_VERSION = '3.24.2'
-    DEFAULT_TRANSFORM_GRAPH = '/home/jc225751/Program/hbp-spatial-backend/instance/graph.yaml'
-
-
+    DEFAULT_TRANSFORM_GRAPH = ''
 
 
 # This function has a magic name which is recognized by flask as a factory for

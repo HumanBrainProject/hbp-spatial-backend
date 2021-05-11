@@ -288,9 +288,9 @@ def get_transform_command(args):
     tg = _get_transform_graph()
     try:
         direct_transform_chain = tg.get_transform_chain(source_space,
-                                                 target_space)
+                                                        target_space)
         inverse_transform_chain = tg.get_transform_chain(target_space,
-                                                    source_space)
+                                                         source_space)
     except KeyError:
         abort(400, errors=['source_space or target_space not found'])
 

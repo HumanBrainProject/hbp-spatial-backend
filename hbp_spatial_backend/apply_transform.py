@@ -43,7 +43,7 @@ def transform_points(source_points, direct_transform_chain, cwd=None):
     # if logger.isEnabledFor(logging.DEBUG):
     import shlex
     logger.info('Transforming %d points with: %s', len(source_points),
-                 ' '.join(shlex.quote(arg) for arg in cmd))
+                ' '.join(shlex.quote(arg) for arg in cmd))
     logger.info(' '.join(cmd))
     time_before = time.perf_counter()
 
@@ -61,7 +61,6 @@ def transform_points(source_points, direct_transform_chain, cwd=None):
     target_points = list(parse_points_output(io.StringIO(res.stdout)))
     assert len(target_points) == len(source_points)
     return target_points
-
 
 
 def get_transform_command(only_points,
