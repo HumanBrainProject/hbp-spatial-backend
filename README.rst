@@ -58,6 +58,8 @@ Useful commands for development:
   pip install pre-commit
   pre-commit install  # install the pre-commit hook
 
+  # Before a commit, you can launch the pre-commit:
+  pre-commit run --all-files
 
 Contributing
 ============
