@@ -69,7 +69,7 @@ def get_transform_command(input_coords,
     transform_params = []
     for t in direct_transform_chain:
         transform_params.extend(['--direct-transform', t])
-    for t in inverse_target_chain:
+    for t in inverse_target_chain[:-1]:
         transform_params.extend(['--inverse-transform', t])
 
     cmd = ['AimsApplyTransform']
