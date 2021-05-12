@@ -198,11 +198,6 @@ class GetTransformCommandRequestSchema(Schema):
     class Meta:
         ordered = True
 
-    source_space = fields.Str(
-        required=True,
-        description='Identifier of the source template space.',
-        example='MNI 152 ICBM 2009c Nonlinear Asymmetric',
-    )
     only_points = fields.Boolean(
         required=False,
         description='States if inputs are only points (True) or not (False).',
@@ -295,7 +290,7 @@ def transform_points(args):
              })
 def get_transform_command(args):
     """Get the transform command."""
-    only_points = args['only_points']
+    only_points = args['only_points'] if 'only_points' in args else False
     source_space = args['source_space']
     target_space = args['target_space']
     input_coords = args['input_coords']

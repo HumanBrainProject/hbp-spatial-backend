@@ -113,7 +113,9 @@ def create_app(test_config=None):
     app.config.from_object(DefaultConfig)
     if test_config is None:
         # load the instance config, if it exists, when not testing
+        # Looks for config.py in instance dir
         app.config.from_pyfile("config.py", silent=True)
+        # Looks or configuration file pointed by HBP_SPATIAL_BACKEND_SETTINGS
         app.config.from_envvar("HBP_SPATIAL_BACKEND_SETTINGS", silent=True)
     else:
         # load the test config if passed in
@@ -126,6 +128,9 @@ def create_app(test_config=None):
         pass
 
     app.logger.info("Instance path : %s", app.instance_path)
+    app_dict = dict(app.config)
+    app_str = '\n'.join(f'{k} = {v}' for k, v in app_dict.items())
+    app.logger.info("Logging dict ---> {0}".format(app_str))
 
     @app.route("/")
     def root():
