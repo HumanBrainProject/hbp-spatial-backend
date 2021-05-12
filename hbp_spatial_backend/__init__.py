@@ -115,7 +115,8 @@ def create_app(test_config=None):
         # load the instance config, if it exists, when not testing
         # Looks for config.py in instance dir
         app.config.from_pyfile("config.py", silent=True)
-        # Looks or configuration file pointed by HBP_SPATIAL_BACKEND_SETTINGS
+        # Looks for configuration settings file
+        # pointed by HBP_SPATIAL_BACKEND_SETTINGS
         app.config.from_envvar("HBP_SPATIAL_BACKEND_SETTINGS", silent=True)
     else:
         # load the test config if passed in
@@ -127,6 +128,12 @@ def create_app(test_config=None):
     except OSError:
         pass
 
+    # Default transform graph is graph.yaml in instance dir
+    if not app.config['DEFAULT_TRANSFORM_GRAPH']:
+        app.config['DEFAULT_TRANSFORM_GRAPH'] = os.path.join(app.instance_path,
+                                                             'graph.yaml')
+
+    # Logs config dictionary
     app.logger.info("Instance path : %s", app.instance_path)
     app_dict = dict(app.config)
     app_str = '\n'.join('{} = {}'.format(k, v) for k, v in app_dict.items())

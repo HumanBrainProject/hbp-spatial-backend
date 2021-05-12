@@ -198,11 +198,6 @@ class GetTransformCommandRequestSchema(Schema):
     class Meta:
         ordered = True
 
-    only_points = fields.Boolean(
-        required=False,
-        description='States if inputs are only points (True) or not (False).',
-        example='False',
-    )
     source_space = fields.Str(
         required=True,
         description='Identifier of the source template space.',
@@ -290,7 +285,6 @@ def transform_points(args):
              })
 def get_transform_command(args):
     """Get the transform command."""
-    only_points = args['only_points'] if 'only_points' in args else False
     source_space = args['source_space']
     target_space = args['target_space']
     input_coords = args['input_coords']
@@ -305,7 +299,6 @@ def get_transform_command(args):
         abort(400, errors=['source_space or target_space not found'])
 
     transform_command = apply_transform.get_transform_command(
-        only_points=only_points,
         input_coords=input_coords,
         direct_transform_chain=direct_transform_chain,
         inverse_target_chain=inverse_transform_chain)
