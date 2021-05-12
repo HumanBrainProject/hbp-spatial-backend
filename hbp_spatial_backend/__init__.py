@@ -129,7 +129,7 @@ def create_app(test_config=None):
 
     app.logger.info("Instance path : %s", app.instance_path)
     app_dict = dict(app.config)
-    app_str = '\n'.join(f'{k} = {v}' for k, v in app_dict.items())
+    app_str = '\n'.join('{} = {}'.format(k, v) for k, v in app_dict.items())
     app.logger.info("Logging dict ---> {0}".format(app_str))
 
     @app.route("/")
