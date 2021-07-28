@@ -73,7 +73,7 @@ def get_transform_command(input_coords,
         transform_params.extend(['--inverse-transform', t])
 
     cmd = ['AimsApplyTransform']
-    cmd.extend(['--input_coords', input_coords])
+    cmd.extend(['--input-coords', input_coords])
     cmd.extend(transform_params)
 
     transform_command = ' '.join(cmd)
