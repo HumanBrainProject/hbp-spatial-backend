@@ -209,10 +209,13 @@ class GetTransformCommandRequestSchema(Schema):
         example='MNI Colin 27',
     )
     input_coords = fields.Str(
-        required=True,
+        required=False,
         description="How to interpret coordinates in the input image w.r.t. "
-                    "the transformations written in the image header.",
-        example='AIMS',
+                    "the transformations written in the image header. See "
+                    "AimsApplyTransform --help for the list of supported "
+                    "values.",
+        load_default='auto',
+        example='auto',
     )
 
 
