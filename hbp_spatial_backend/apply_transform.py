@@ -65,11 +65,11 @@ def transform_points(source_points, direct_transform_chain, cwd=None):
 
 def get_transform_command(input_coords,
                           direct_transform_chain,
-                          inverse_target_chain):
+                          inverse_transform_chain):
     transform_params = []
     for t in direct_transform_chain:
         transform_params.extend(['--direct-transform', t])
-    for t in inverse_target_chain[:-1]:
+    for t in inverse_transform_chain:
         transform_params.extend(['--inverse-transform', t])
 
     cmd = ['AimsApplyTransform']

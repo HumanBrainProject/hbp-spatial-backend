@@ -301,7 +301,7 @@ def get_transform_command(args):
     transform_command = apply_transform.get_transform_command(
         input_coords=input_coords,
         direct_transform_chain=direct_transform_chain,
-        inverse_target_chain=inverse_transform_chain)
+        inverse_transform_chain=inverse_transform_chain)
 
     response = jsonify(GetTransformCommandResponseSchema().dump({
         'transform_command': transform_command,
