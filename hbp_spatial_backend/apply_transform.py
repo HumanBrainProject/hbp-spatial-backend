@@ -63,19 +63,24 @@ def transform_points(source_points, direct_transform_chain, cwd=None):
     return target_points
 
 
-def get_transform_command(input_coords,
-                          direct_transform_chain,
-                          inverse_transform_chain):
-    transform_params = []
-    for t in direct_transform_chain:
-        transform_params.extend(['--direct-transform', t])
-    for t in inverse_transform_chain:
-        transform_params.extend(['--inverse-transform', t])
+def get_transform_command(direct_transform_chain=None,
+                          inverse_transform_chain=None,
+                          reference=None,
+                          input_coords=None):
+    assert ((direct_transform_chain is not None)
+            or (inverse_transform_chain is not None))
 
     cmd = ['AimsApplyTransform']
-    cmd.extend(['--input-coords', input_coords])
-    cmd.extend(transform_params)
-
+    if direct_transform_chain is not None:
+        for t in direct_transform_chain:
+            cmd.extend(['--direct-transform', t])
+    if inverse_transform_chain is not None:
+        for t in inverse_transform_chain:
+            cmd.extend(['--inverse-transform', t])
+    if input_coords:
+        cmd.extend(['--input-coords', input_coords])
+    if reference:
+        cmd.extend(['--reference', reference])
     return cmd
 
 

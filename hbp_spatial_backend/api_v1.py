@@ -272,7 +272,7 @@ def transform_points(args):
     return {'target_points': target_points}
 
 
-@bp.route('/get-transform-command')
+@bp.route('/get-mesh-transform-command')
 @bp.arguments(GetTransformCommandRequestSchema, location='query')
 # The error responses come first, the schemas are only used for
 # documentation
@@ -288,7 +288,7 @@ def transform_points(args):
              example={
                  'transform_command': ["AimsApplyTransform", "--help"],
              })
-def get_transform_command(args):
+def get_mesh_transform_command(args):
     """Get the transform command."""
     source_space = args['source_space']
     target_space = args['target_space']
@@ -304,9 +304,69 @@ def get_transform_command(args):
         abort(400, errors=['source_space or target_space not found'])
 
     transform_command = apply_transform.get_transform_command(
-        input_coords=input_coords,
         direct_transform_chain=direct_transform_chain,
-        inverse_transform_chain=inverse_transform_chain)
+        inverse_transform_chain=inverse_transform_chain,
+        input_coords=input_coords,
+    )
+
+    response = jsonify(GetTransformCommandResponseSchema().dump({
+        'transform_command': transform_command,
+    }))
+
+    response.cache_control.public = True
+    response.cache_control.max_age = 86400  # 1 day
+    return response
+
+
+@bp.route('/get-image-transform-command')
+@bp.arguments(GetTransformCommandRequestSchema, location='query')
+# The error responses come first, the schemas are only used for
+# documentation
+@bp.response(ErrorResponseSchema,
+             code=400,
+             example={'message': 'source_space or target_space not found'})
+# Code 422 is raised by webargs for request validation errors
+@bp.response(ErrorResponseSchema,
+             code=422, description='Semantically invalid request')
+# The successful response must be the last response decorator, its schema
+# is used for serializing the response.
+@bp.response(GetTransformCommandResponseSchema,
+             example={
+                 'transform_command': ["AimsApplyTransform", "--help"],
+             })
+def get_image_transform_command(args):
+    """Get the transform command."""
+    source_space = args['source_space']
+    target_space = args['target_space']
+    input_coords = args['input_coords']
+
+    tg = _get_transform_graph()
+    try:
+        inverse_transform_chain = tg.get_transform_chain(target_space,
+                                                         source_space)
+    except KeyError:
+        abort(400, errors=['source_space or target_space not found'])
+
+    # For resampling images we have use AIMS image coordinates (whose origin is
+    # in the corner of the field of view), so we have to remove the last affine
+    # transformation of the chain, whose purpose is to go from these image
+    # coordinates to template coordinates (whose origin is usually centered
+    # around the center of the brain in the region of the anterior commissure).
+    #
+    # FIXME: This is a kind of hack that is specific to the way that the
+    # transform graph is stored as of now. The proper solution will need
+    # options to be added to AimsApplyTransform for properly specifying the
+    # output geometry (i.e. setting the FoV).
+    inverse_transform_chain = inverse_transform_chain[1:]
+    reference = inverse_transform_chain[0]
+    assert not reference.startswith('inv:')
+    assert not reference.endswith('.trm')
+
+    transform_command = apply_transform.get_transform_command(
+        inverse_transform_chain=inverse_transform_chain,
+        reference=reference,
+        input_coords=input_coords,
+    )
 
     response = jsonify(GetTransformCommandResponseSchema().dump({
         'transform_command': transform_command,
