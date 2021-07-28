@@ -76,10 +76,7 @@ def get_transform_command(input_coords,
     cmd.extend(['--input-coords', input_coords])
     cmd.extend(transform_params)
 
-    transform_command = ' '.join(cmd)
-    logger.info(transform_command)
-
-    return transform_command
+    return cmd
 
 
 def transform_point(source_point, direct_transform_chain, cwd=None):

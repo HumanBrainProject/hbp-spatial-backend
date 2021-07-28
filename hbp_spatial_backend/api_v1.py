@@ -220,10 +220,12 @@ class GetTransformCommandRequestSchema(Schema):
 
 
 class GetTransformCommandResponseSchema(Schema):
-    transform_command = fields.Str(
+    transform_command = fields.List(
+        fields.Str(),
         required=True,
-        description='Aims command from source space to target space, '
-                    'given as string',
+        description='AimsApplyTransform command to use for transforming data '
+                    'from source space to target space, given as a list of '
+                    'commandline arguments',
     )
 
 
@@ -284,7 +286,7 @@ def transform_points(args):
 # is used for serializing the response.
 @bp.response(GetTransformCommandResponseSchema,
              example={
-                 'transform_command': "AimsApplyTransform ...",
+                 'transform_command': ["AimsApplyTransform", "--help"],
              })
 def get_transform_command(args):
     """Get the transform command."""
