@@ -270,7 +270,7 @@ def transform_points(args):
     return {'target_points': target_points}
 
 
-@bp.route('/get_transform_command')
+@bp.route('/get-transform-command')
 @bp.arguments(GetTransformCommandRequestSchema, location='query')
 # The error responses come first, the schemas are only used for
 # documentation
