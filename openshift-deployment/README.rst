@@ -112,7 +112,7 @@ For the record, here are the steps that were used to create this OpenShift proje
 
       #. Install the OpenShift Command-Line Tools by following the instructions on https://okd-dev.hbp.eu/console/command-line
       #. Log in using the CLI (Under your name on the top right corner, hit `Copy Login Command` and paste it into a terminal)
-      #. Switch to the project (``oc project hbp-spatial-transform``)
+      #. Switch to the project (``oc project hbp-spatial-backend``)
       #. Run a dummy pod for rsync transfer with ``oc run dummy --image ylep/oc-rsync-transfer``
       #. Mount the volume against the dummy pod ``oc set volume dc/dummy --add --name=tmp-mount --claim-name=static-data --mount-path /static-data``
       #. Wait for the deployment to be complete with ``oc rollout status dc/dummy``
