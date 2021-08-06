@@ -1,16 +1,32 @@
-# Run from the directory that contains this script (docker-aims)
+# Must be run from the directory that contains this script (docker-aims)
 
-: ${CASA_DEFAULT_REPOSITORY:=/volatile/bv/casa_distro_repo}  # set default value
-export CASA_DEFAULT_REPOSITORY
+# This script
+
+####################################
+# 1. Downloads brainvisa dev image #
+####################################
+
+: ${CASA_BASE_REPOSITORY:=/volatile/bv/casa_distro_repo}  # set default value
+export CASA_BASE_REPOSITORY
+export IMAGE_VERSION=5.0-4
+export IMAGE_NAME=aims-opensource-master-$IMAGE_VERSION
 
 casa_distro \
-    create \
-    distro_name=aims \
-    distro_source=opensource \
-    branch=bug_fix \
-    system=ubuntu-16.04
+    setup_dev \
+    branch=master \
+    url=https://brainvisa.info/download \
+    image_version=$IMAGE_VERSION \
+    output=$CASA_BASE_REPOSITORY/$IMAGE_NAME
 
-cat <<'EOF' > "$CASA_DEFAULT_REPOSITORY"/aims/bug_fix_ubuntu-16.04/conf/bv_maker.cfg
+# mv $CASA_BASE_REPOSITORY/opensource-master-$IMAGE_VERSION $CASA_BASE_REPOSITORY/$IMAGE_NAME
+export PATH="$CASA_BASE_REPOSITORY/$IMAGE_NAME/bin:$PATH"
+
+###################################
+# 2. Configures bv_maker          #
+###################################
+
+# Only aims dependencies will be installed
+cat <<'EOF' > "$CASA_BASE_REPOSITORY"/$IMAGE_NAME/conf/bv_maker.cfg
 [ source $CASA_SRC ]
   brainvisa brainvisa-cmake $CASA_BRANCH
   brainvisa soma-base $CASA_BRANCH
@@ -19,7 +35,7 @@ cat <<'EOF' > "$CASA_DEFAULT_REPOSITORY"/aims/bug_fix_ubuntu-16.04/conf/bv_maker
 
 [ build $CASA_BUILD ]
   default_steps = configure build
-  make_options = -j16
+  make_options = -j$NCPU
   build_type = Release
   packaging_thirdparty = OFF
   clean_config = ON
@@ -32,22 +48,21 @@ cat <<'EOF' > "$CASA_DEFAULT_REPOSITORY"/aims/bug_fix_ubuntu-16.04/conf/bv_maker
   brainvisa aims-free $CASA_BRANCH $CASA_SRC
 EOF
 
-casa_distro \
-    bv_maker \
-    distro=aims \
-    branch=bug_fix \
-    system=ubuntu-16.04
+###################################
+# 3. Installs aims in image       #
+###################################
 
-casa_distro \
-    run \
-    distro=aims \
-    branch=bug_fix \
-    system=ubuntu-16.04 \
-    /bin/sh -c 'cd /casa/build && make install-runtime BRAINVISA_INSTALL_PREFIX=/casa/install'
+bv_maker
 
-cp -a "$CASA_DEFAULT_REPOSITORY"/aims/bug_fix_ubuntu-16.04/install .
+bv /bin/sh -c 'cd /casa/host/build && make install-runtime BRAINVISA_INSTALL_PREFIX=/casa/host/install'
 
-DOCKER_IMAGE=brainvisa-aims:bug_fix_$(date -Id)
+rm -rf install && cp -a "$CASA_BASE_REPOSITORY"/"$IMAGE_NAME"/install .
+
+###################################
+# 4. Creates docker image         #
+###################################
+
+DOCKER_IMAGE=brainvisa-aims:master_$(date -Id)
 docker build -t $DOCKER_IMAGE .
 
 docker save -o $DOCKER_IMAGE.tar $DOCKER_IMAGE

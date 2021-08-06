@@ -28,6 +28,21 @@ Documentation
 
 The API is documented using the OpenAPI standard (a.k.a. Swagger): see `the ReDoc-generated documentation <https://hbp-spatial-backend.apps.hbp.eu/redoc>`_. `A Swagger UI page <https://hbp-spatial-backend.apps.hbp.eu/swagger-ui>`_ is also available for trying out the API.
 
+Tutorial on docker example
+==========================
+
+.. code-block:: shell
+
+# Commands to use docker as non-sudo user
+sudo groupadd docker
+sudo usermod -aG docker $USER
+sudo reboot # (or you can just login/logout)
+# To check then that it works:
+docker ps
+
+#
+docker build -t hbp-spatial-backend .
+docker run -t -i --rm hbp-spatial-backend bash
 
 Development
 ===========
