@@ -51,7 +51,7 @@ VOLUME ${INSTANCE_PATH}
 # 3. Create an unprivileged user that will run the server #
 ###########################################################
 RUN useradd --create-home -G sudo -p "$(openssl passwd -1 user)" user
-RUN mkdir -p ${INSTANCE_PATH} && chown user:user ${INSTANCE_PATH}
+RUN mkdir -p ${INSTANCE_PATH}  && chown user:user ${INSTANCE_PATH}
 RUN mkdir -p ${TRANSFORMATION_DATA_PATH} && chown user:user ${TRANSFORMATION_DATA_PATH}
 USER user
 
