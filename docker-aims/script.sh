@@ -18,7 +18,8 @@ casa_distro \
     image_version=$IMAGE_VERSION \
     output=$CASA_BASE_REPOSITORY/$IMAGE_NAME
 
-# mv $CASA_BASE_REPOSITORY/opensource-master-$IMAGE_VERSION $CASA_BASE_REPOSITORY/$IMAGE_NAME
+# mv $CASA_BASE_REPOSITORY/opensource-master-$IMAGE_VERSION \
+# $CASA_BASE_REPOSITORY/$IMAGE_NAME
 export PATH="$CASA_BASE_REPOSITORY/$IMAGE_NAME/bin:$PATH"
 
 ###################################

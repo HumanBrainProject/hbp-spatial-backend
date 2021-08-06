@@ -42,9 +42,17 @@ Tutorial on docker example
    # To check that it works:
    docker ps
 
-   #
+   # Command to run from the directory hbp-spatial-backend
    docker build -t hbp-spatial-backend .
-   docker run -t -i --rm hbp-spatial-backend bash
+
+   # Runs
+   docker run -t -i --rm -p 8080:8080 hbp-spatial-backend
+
+   # From inside the container
+   curl -X GET "http://0.0.0.0:8080/v1/graph.yaml" -H  "accept: */*"
+
+   # From outside the container (here docker IP is 172.17.0.1)
+   curl -X GET "http://172.17.0.1:8080/v1/graph.yaml" -H  "accept: */*"
 
 Development
 ===========
