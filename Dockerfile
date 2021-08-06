@@ -11,6 +11,7 @@ RUN apt-get update \
         python3-pip \
         python3-wheel \
         python3-venv \
+        build-essential \
         git \
         wget \
         lsof \
@@ -20,6 +21,8 @@ RUN apt-get update \
 
 # # to deal with non-ASCII characters in source
 ENV LANG=C.UTF-8
+
+RUN python3 -m pip install --no-cache-dir setuptools wheel
 
 ##################################
 # 1. Install hbp-spatial-backend in virtualenv#
