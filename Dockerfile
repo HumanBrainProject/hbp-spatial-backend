@@ -72,5 +72,4 @@ CMD ln -sf \
     && . /opt/venv/bin/activate \
     && gunicorn --access-logfile=- \
         --preload 'hbp_spatial_backend.wsgi:application' \
-        --bind=:8080 --worker-class=gevent \
-    & /bin/bash
+        --bind=:8080 --worker-class=gevent
