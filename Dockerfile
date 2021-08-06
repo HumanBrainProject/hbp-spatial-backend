@@ -27,11 +27,11 @@ ENV LANG=C.UTF-8
 
 RUN git clone --branch dev \
     https://github.com/HumanBrainProject/hbp-spatial-backend.git \
-    /opt/hbp-spatial-backend
+    /source
 
 RUN python3 -m venv /opt/venv
 RUN . /opt/venv/bin/activate \
-    && cd /opt/hbp-spatial-backend \
+    && cd /source \
     && pip install -e .[dev]
 
 RUN . /opt/venv/bin/activate \
