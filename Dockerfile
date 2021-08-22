@@ -24,9 +24,9 @@ ENV LANG=C.UTF-8
 
 RUN python3 -m pip install --no-cache-dir setuptools wheel
 
-##################################
+###############################################
 # 1. Install hbp-spatial-backend in virtualenv#
-##################################
+###############################################
 
 RUN git clone --branch dev \
     https://github.com/HumanBrainProject/hbp-spatial-backend.git \
@@ -56,8 +56,19 @@ ENV TRANSFORMATION_DATA_PATH /transformation-data
 
 VOLUME ${INSTANCE_PATH}
 
+#################################
+# 3. Copy local tutorial script #
+#################################
+
+RUN . /opt/venv/bin/activate \
+    && pip install requests argparse
+
+COPY get_local_image_transform_command.py \
+     /root/get_local_image_transform_command.py
+
+
 ###########################################################
-# 3. Create an unprivileged user that will run the server #
+# 4. Create an unprivileged user that will run the server #
 ###########################################################
 #RUN useradd --create-home -G sudo -p "$(openssl passwd -1 user)" user
 RUN mkdir -p ${TRANSFORMATION_DATA_PATH} && chown root:root ${TRANSFORMATION_DATA_PATH}
@@ -77,4 +88,5 @@ ENTRYPOINT ln -sf \
     && gunicorn --access-logfile=- \
         --preload 'hbp_spatial_backend.wsgi:application' \
         --bind=:8080 --worker-class=gevent \
-    & /bin/bash
+    & echo ". /opt/venv/bin/activate" >> /root/.bashrc \
+    && /bin/bash
