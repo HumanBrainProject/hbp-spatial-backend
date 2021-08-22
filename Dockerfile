@@ -70,10 +70,11 @@ RUN mkdir -p ${INSTANCE_PATH} && chown root:root ${INSTANCE_PATH}
 ###########################
 ENV FLASK_APP hbp_spatial_backend
 EXPOSE 8080
-CMD ln -sf \
+ENTRYPOINT ln -sf \
     ${TRANSFORMATION_DATA_PATH}/DISCO_20181004_sigV30_DARTEL_20181004_reg_x4/* \
     ${INSTANCE_PATH} \
     && . /opt/venv/bin/activate \
     && gunicorn --access-logfile=- \
         --preload 'hbp_spatial_backend.wsgi:application' \
-        --bind=:8080 --worker-class=gevent
+        --bind=:8080 --worker-class=gevent \
+    & /bin/bash

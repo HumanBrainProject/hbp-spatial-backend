@@ -43,16 +43,22 @@ Tutorial on docker example
    docker ps
 
    # Command to run from the directory hbp-spatial-backend
+   # This creates the container hbp-spatial-backend
    docker build -t hbp-spatial-backend .
 
-   # Runs
-   docker run -t -i --rm -p 8080:8080 hbp-spatial-backend
+   # Runs the container and mounts your data directory
+   # containing your nii files into the container directory /Data
+   # Change DATA_DIR to match your local data directory
+   DATA_DIR=/volatile/Data
+   docker run -t -i --rm -p 8080:8080 -v $DATA_DIR:/Data hbp-spatial-backend
 
    # From inside the container
    curl -X GET "http://0.0.0.0:8080/v1/graph.yaml" -H  "accept: */*"
 
    # From outside the container (here docker IP is 172.17.0.1)
-   curl -X GET "http://172.17.0.1:8080/v1/graph.yaml" -H  "accept: */*"
+   # Use the IP of your docker container (to know it, run ifconfig, and look for docker0 IP)
+   DOCKER_IP=172.17.0.1
+   curl -X GET "http://$DOCKER_IP:8080/v1/graph.yaml" -H  "accept: */*"
 
 Development
 ===========
