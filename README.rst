@@ -169,7 +169,7 @@ After around one minute, the transformed file is created. The python script has 
 Note here that we have used an extra option (--interp nearest). It is an option that has been passed further to AimsApplyTransform.
 It is only necessary because the file used is a file of labels (namely, the labels of the parcellation), thus the default linear interpolation is not correct. But, in the usual case, we will not add this option.
 
-We now represent the left-brain parcellation together tith the big brain template (using Anatomist):
+We now represent the left-brain parcellation together with the big brain template (using Anatomist):
 
 .. image:: image/julich-brain-l-in-bigbrain.png
    :width: 50%
@@ -177,12 +177,18 @@ We now represent the left-brain parcellation together tith the big brain templat
 Getting transformations to other reference spaces
 -------------------------------------------------
 
-We can use now the same script to get the parcellation into the MNI Colin 27 reference space (-t "MNI Colin 27"):
+We can use now the same script to get the parcellation into the MNI Colin 27
+reference space. For this, we will change only the target space (-t "MNI Colin 27") and the output file.
+
+Below, we visualize the parcellation transformed into the MNI Colin 27 space:
 
 .. image:: image/julich-brain-l-in-colin27.png
    :width: 50%
 
-We can also use it to get the parcellation into the infant reference space (-t "Infant Atlas"):
+We can also use it to get the parcellation into the infant reference space.
+Again, we will change only the target space (-t "Infant Atlas") and the output file.
+
+Below, we visualize the parcellation in the infant reference space:
 
 .. image:: image/julich-brain-l-in-infant.png
    :width: 50%
