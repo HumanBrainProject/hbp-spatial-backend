@@ -14,6 +14,7 @@
 # See the Licence for the specific language governing permissions and
 # limitations under the Licence.
 
+import os
 
 import pytest
 import requests
@@ -21,9 +22,13 @@ import requests
 
 @pytest.fixture
 def base_url():
-    # return 'https://hbp-spatial-backend.apps.hbp.eu/'
-    # return 'https://hbp-spatial-backend.apps-dev.hbp.eu/'
-    return 'http://127.0.0.1:5000/'
+    url = os.environ.get('HBP_SPATIAL_BACKEND_TEST_URL')
+    if url:
+        return url
+    else:
+        # return 'https://hbp-spatial-backend.apps.hbp.eu/'
+        # return 'https://hbp-spatial-backend.apps-dev.hbp.eu/'
+        return 'http://127.0.0.1:5000/'
 
 
 class TransformRequester:
