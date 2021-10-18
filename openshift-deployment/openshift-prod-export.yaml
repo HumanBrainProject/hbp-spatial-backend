@@ -38,9 +38,10 @@ items:
       script: |
         set -e
         # Without PIP_IGNORE_INSTALLED=0 the Debian version of pip would
-        # re-install all dependencies in the user's home directory
+        # re-install already installed dependencies in the user's home
+        # directory
         # (https://github.com/pypa/pip/issues/4222#issuecomment-417672236)
-        PIP_IGNORE_INSTALLED=0 python3 -m pip install --user /source[tests]
+        PIP_IGNORE_INSTALLED=0 python3 -m pip install --user -r test-requirements.txt
         cd /source
         python3 -m pytest tests/
     resources: {}

@@ -1,0 +1,3 @@
+# Remember to keep synchronized with tests_require in setup.py
+pytest
+requests~=2.5
