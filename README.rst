@@ -18,7 +18,7 @@ Public deployments
 
 A production deployment (following the ``master`` branch) is deployed on https://hbp-spatial-backend.apps.hbp.eu. |uptime-prod|
 
-The ``dev`` branch is deployed on https://hbp-spatial-backend.apps-dev.hbp.eu. |uptime-dev|
+The ``dev`` branch is deployed on https://hbp-spatial-backend.apps.hbp.eu. |uptime-dev|
 
 The public deployments are managed by OpenShift clusters, the relevant configuration is described in `<openshift-deployment/>`_.
 
@@ -197,7 +197,7 @@ Below, we visualize the parcellation in the infant reference space:
 Development
 ===========
 
-The backend needs to call ``AimsApplyTransform``, which is part of `the AIMS image processing toolkit <https://github.com/brainvisa/aims-free>`_. You can use `<docker-aims/script.sh>`_ to build a Docker image containing these tools (a pre-built image is available on Docker Hub: `ylep/brainvisa-aims <https://hub.docker.com/r/ylep/brainvisa-aims>`_).
+The backend needs to call ``AimsApplyTransform``, which is part of `the AIMS image processing toolkit <https://github.com/brainvisa/aims-free>`_. You can use `<docker-aims/script.sh>`_ to build a Docker image containing these tools (a pre-built image is available on Docker Hub: `jchavas/brainvisa-aims <https://hub.docker.com/r/jchavas/brainvisa-aims>`_).
 
 Useful commands for development:
 
@@ -209,7 +209,7 @@ Useful commands for development:
   cd hbp-spatial-backend
   python3 -m venv venv/
   . venv/bin/activate
-  pip install -e .[dev]
+  pip3 install -e .[dev]
 
   export FLASK_APP=hbp_spatial_backend
   flask run  # run a local development server
