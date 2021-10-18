@@ -41,8 +41,8 @@ items:
         # re-install already installed dependencies in the user's home
         # directory
         # (https://github.com/pypa/pip/issues/4222#issuecomment-417672236)
-        PIP_IGNORE_INSTALLED=0 python3 -m pip install --user -r test-requirements.txt
         cd /source
+        PIP_IGNORE_INSTALLED=0 python3 -m pip install --user -r test-requirements.txt
         python3 -m pytest tests/
     resources: {}
     runPolicy: Serial
