@@ -1,8 +1,8 @@
 An HTTP backend for transforming coordinates (and, in the future, data) between the HBP core template spaces
 
-.. image:: https://api.travis-ci.com/HumanBrainProject/hbp-spatial-backend.svg?branch=master
-   :target: https://travis-ci.com/HumanBrainProject/hbp-spatial-backend
-   :alt: Travis Build Status
+.. image:: https://github.com/HumanBrainProject/hbp-spatial-backend/actions/workflows/tox.yaml/badge.svg
+   :target: https://github.com/HumanBrainProject/hbp-spatial-backend/actions/workflows/tox.yaml
+   :alt: Build Status
 
 .. image:: https://codecov.io/gh/HumanBrainProject/hbp-spatial-backend/branch/master/graph/badge.svg
    :target: https://codecov.io/gh/HumanBrainProject/hbp-spatial-backend
