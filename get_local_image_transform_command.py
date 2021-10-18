@@ -17,10 +17,12 @@
 # limitations under the Licence.
 
 import sys
-import os
+import subprocess
 
 import requests
 import argparse
+
+from shlex import quote
 
 """
 Source and target spaces can be one of the 4 spaces:
@@ -66,13 +68,33 @@ def get_command(server_address, source_space, target_space):
 
 def format_command(command_from_server, input_file, output_file, extra):
     """Formats the command to a string that can be run on a bash shell
+
+    Args:
+        command_from_server: json object
+        input_file: string
+        output_file: string
+        extra: string
     """
+
     command_as_list = command_from_server.json()['transform_command']
-    command_as_list = [add_path_to_transform(x) for x in command_as_list]
-    command_as_list.extend(['-i', input_file])
-    command_as_list.extend(['-o', output_file])
-    command_as_list.extend(extra)
-    return ' '.join(command_as_list)
+
+    # We construct command as a list
+    # We apply shlex.quote to all the commandline arguments for extra safety
+    command_as_list = [quote(add_path_to_transform(x))
+                       for x in command_as_list]
+    command_as_list.extend(['-i', quote(input_file)])
+    command_as_list.extend(['-o', quote(output_file)])
+    for ex in extra:
+        command_as_list.append(quote(ex))
+
+    # We check that the first argument is 'AimsApplyTransform'
+    if command_as_list[0] != 'AimsApplyTransform':
+        raise ValueError("First argument is NOT \'AimsApplyTransform\', "
+                         "which is NOT expected. "
+                         f"Instead, it was \'{command_as_list[0]}\'. "
+                         "For safety reason, this is forbidden.")
+
+    return command_as_list
 
 
 def parse_args(argv):
@@ -95,7 +117,7 @@ def parse_args(argv):
         help='Server address from which to get the transform command. '
              'From inside docker, it is http://localhost:8080 .'
              'From outside docker, it is http://your_docker_ip:8080 .'
-             'Or : https://hbp-spatial-backend.apps-dev.hbp.eu .'
+             'Or : https://hbp-spatial-backend.apps.hbp.eu .'
              'Default is : ' + SERVER_ADDRESS_DEFAULT)
     parser.add_argument(
         "-i", "--input", type=str, required=True,
@@ -148,6 +170,5 @@ def main(argv):
 if __name__ == '__main__':
     # We capture here command_ready as the stdout of the program
     command_ready = main(argv=sys.argv[1:])
-    print(command_ready)
     # Executes command_ready directly as a system call
-    os.system(command_ready)
+    subprocess.call(command_ready)
