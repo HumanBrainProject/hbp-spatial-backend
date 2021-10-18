@@ -16,13 +16,13 @@
 # See the Licence for the specific language governing permissions and
 # limitations under the Licence.
 
-import sys
+import argparse
+import shlex
 import subprocess
+import sys
 
 import requests
-import argparse
 
-from shlex import quote
 
 """
 Source and target spaces can be one of the 4 spaces:
@@ -63,29 +63,28 @@ def get_command(server_address, source_space, target_space):
         f'{server_address}/v1/'\
         f'get-image-transform-command?source_space={source_space}'\
         f'&target_space={target_space}&input_coords=auto'
-    return requests.get(request_string)
+    response = requests.get(request_string)
+    response.raise_for_status()
+    return response.json()['transform_command']
 
 
 def format_command(command_from_server, input_file, output_file, extra):
     """Formats the command to a string that can be run on a bash shell
 
     Args:
-        command_from_server: json object
+        command_from_server: list
         input_file: string
         output_file: string
         extra: string
     """
 
-    command_as_list = command_from_server.json()['transform_command']
+    command_as_list = command_from_server
 
     # We construct command as a list
-    # We apply shlex.quote to all the commandline arguments for extra safety
-    command_as_list = [quote(add_path_to_transform(x))
-                       for x in command_as_list]
-    command_as_list.extend(['-i', quote(input_file)])
-    command_as_list.extend(['-o', quote(output_file)])
-    for ex in extra:
-        command_as_list.append(quote(ex))
+    command_as_list = [add_path_to_transform(x) for x in command_as_list]
+    command_as_list += ['-i', input_file]
+    command_as_list += ['-o', output_file]
+    command_as_list += extra
 
     # We check that the first argument is 'AimsApplyTransform'
     if command_as_list[0] != 'AimsApplyTransform':
@@ -160,7 +159,14 @@ def main(argv):
                             input_file=args.input,
                             output_file=args.output,
                             extra=extra)
-    return command_ready
+
+    # Print the AimsApplyTransform command on stdout
+    print(' '.join(shlex.quote(arg) for arg in command_ready))
+
+    # Executes command_ready directly as a system call
+    retcode = subprocess.call(command_ready)
+
+    return retcode
 
 
 ######################################################################
@@ -168,7 +174,4 @@ def main(argv):
 ######################################################################
 
 if __name__ == '__main__':
-    # We capture here command_ready as the stdout of the program
-    command_ready = main(argv=sys.argv[1:])
-    # Executes command_ready directly as a system call
-    subprocess.call(command_ready)
+    sys.exit(main(sys.argv[1:]))
