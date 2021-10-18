@@ -14,8 +14,9 @@ RUN apt-get update \
 # Upgrade pip as recommended
 RUN python3 -m pip install --no-cache-dir --upgrade pip
 
-# Setuptools is needed to import from source
-RUN python3 -m pip install --no-cache-dir setuptools
+# Setuptools is needed to import from source, wheel to build/install the
+# package
+RUN python3 -m pip install --no-cache-dir setuptools wheel
 
 RUN python3 -m pip install --no-cache-dir gunicorn[gevent]
 
