@@ -18,7 +18,7 @@ Public deployments
 
 A production deployment (following the ``master`` branch) is deployed on https://hbp-spatial-backend.apps.hbp.eu. |uptime-prod|
 
-The ``dev`` branch is deployed on https://hbp-spatial-backend.apps.hbp.eu. |uptime-dev|
+The ``dev`` branch is deployed on https://hbp-spatial-backend.apps-dev.hbp.eu. |uptime-dev|
 
 The public deployments are managed by OpenShift clusters, the relevant configuration is described in `<openshift-deployment/>`_.
 
