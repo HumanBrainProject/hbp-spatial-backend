@@ -32,10 +32,9 @@ Source and target spaces can be one of the 4 spaces:
 SOURCE_SPACE_DEFAULT = "MNI 152 ICBM 2009c Nonlinear Asymmetric"
 TARGET_SPACE_DEFAULT = "Big Brain (Histology)"
 
-
-SERVER_ADDRESS_DEFAULT = "http://0.0.0.0:8080"
+SERVER_ADDRESS_DEFAULT = "https://hbp-spatial-backend.apps.hbp.eu"
+# SERVER_ADDRESS_DEFAULT = "http://0.0.0.0:8080"
 # SERVER_ADDRESS_DEFAULT = "http://172.17.0.1:8080"
-# SERVER_ADDRESS_DEFAULT = "https://hbp-spatial-backend.apps-dev.hbp.eu"
 INSTANCE_PATH = "/instance"
 
 
