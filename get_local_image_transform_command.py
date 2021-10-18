@@ -93,7 +93,7 @@ def parse_args(argv):
     parser.add_argument(
         "-a", "--server_address", type=str, default=SERVER_ADDRESS_DEFAULT,
         help='Server address from which to get the transform command. '
-             'From inside docker, it is http://0.0.0.0:8080 .'
+             'From inside docker, it is http://localhost:8080 .'
              'From outside docker, it is http://your_docker_ip:8080 .'
              'Or : https://hbp-spatial-backend.apps-dev.hbp.eu .'
              'Default is : ' + SERVER_ADDRESS_DEFAULT)

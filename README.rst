@@ -83,7 +83,7 @@ To check that it works, we now make a simple request from inside the container:
 .. code-block:: shell
 
    # From inside the container
-   curl -X GET "http://0.0.0.0:8080/v1/graph.yaml" -H  "accept: */*"
+   curl -X GET "http://localhost:8080/v1/graph.yaml" -H  "accept: */*"
 
 This reads the transformation graphs stored in the container.
 The end of the output should be similar to this:
@@ -162,7 +162,7 @@ We now give to the program:
 .. code-block:: shell
 
    # From the docker container
-   ./get_local_image_transform_command.py -a http://0.0.0.0:8080 -s "MNI 152 ICBM 2009c Nonlinear Asymmetric" -t "Big Brain (Histology)" -i /Data/tutorial_hbp_spatial_backend/julich-brain-l-native-mni152.nii.gz -o /Data/tutorial_hbp_spatial_backend/julich-brain-l-in-bigbrain.nii.gz --interp nearest
+   ./get_local_image_transform_command.py -a http://localhost:8080 -s "MNI 152 ICBM 2009c Nonlinear Asymmetric" -t "Big Brain (Histology)" -i /Data/tutorial_hbp_spatial_backend/julich-brain-l-native-mni152.nii.gz -o /Data/tutorial_hbp_spatial_backend/julich-brain-l-in-bigbrain.nii.gz --interp nearest
 
 After around one minute, the transformed file is created. The python script has made a request to the server to get the transform command and has launched AimsApplyTransform with the  correct transformations.
 
