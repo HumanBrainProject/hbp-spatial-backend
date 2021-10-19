@@ -28,7 +28,6 @@ from marshmallow.validate import Length
 from hbp_spatial_backend import apply_transform
 from hbp_spatial_backend.transform_graph import TransformGraph
 
-
 logger = logging.getLogger(__name__)
 
 bp = flask_smorest.Blueprint(
@@ -69,6 +68,9 @@ def get_graph_yaml():
     which links the template spaces. **The format of this file is subject to
     change, this endpoint may be modified or removed at any time.**
     """
+    logger.info('default path to graph.yaml: %s',
+                current_app.config['DEFAULT_TRANSFORM_GRAPH'])
+    logger.info('instance path: %s', current_app.instance_path)
     return flask.send_file(current_app.config['DEFAULT_TRANSFORM_GRAPH'],
                            mimetype='text/x-yaml')
 
@@ -76,38 +78,51 @@ def get_graph_yaml():
 class TransformPointRequestSchema(Schema):
     class Meta:
         ordered = True
+
     source_space = fields.Str(
         required=True,
-        description='Identifier of the source template space.',
-        example='MNI 152 ICBM 2009c Nonlinear Asymmetric',
+        metadata=dict(
+            description='Identifier of the source template space.',
+            example='MNI 152 ICBM 2009c Nonlinear Asymmetric',
+        ),
     )
     target_space = fields.Str(
         required=True,
-        description='Identifier of the target template space.',
-        example='Big Brain (Histology)',
+        metadata=dict(
+            description='Identifier of the target template space.',
+            example='Big Brain (Histology)',
+        ),
     )
     x = fields.Float(
         required=True,
-        description='X coordinate of the source point, in millimetres.',
-        example=1.0,
+        metadata=dict(
+            description='X coordinate of the source point, in millimetres.',
+            example=1.0,
+        ),
     )
     y = fields.Float(
         required=True,
-        description='Y coordinate of the source point, in millimetres.',
-        example=2.0
+        metadata=dict(
+            description='Y coordinate of the source point, in millimetres.',
+            example=2.0,
+        ),
     )
     z = fields.Float(
         required=True,
-        description='Z coordinate of the source point, in millimetres.',
-        example=3.0,
+        metadata=dict(
+            description='Z coordinate of the source point, in millimetres.',
+            example=3.0,
+        ),
     )
 
 
 class TransformPointResponseSchema(Schema):
     target_point = fields.List(
         fields.Float, validate=Length(equal=3), required=True,
-        description='Coordinates of the transformed point in the target '
-        'space, expressed as [x, y, z], in millimetres.',
+        metadata=dict(
+            description='Coordinates of the transformed point in the target '
+                        'space, expressed as [x, y, z], in millimetres.',
+        ),
     )
 
 
@@ -115,6 +130,7 @@ class ErrorResponseSchema(Schema):
     class Meta:
         unknown = marshmallow.INCLUDE
         strict = False
+
     code = fields.Integer(required=False)
     status = fields.String(required=False)
     message = fields.String(required=False)
@@ -162,19 +178,22 @@ def transform_point(args):
 class TransformPointsRequestSchema(Schema):
     class Meta:
         ordered = True
+
     source_space = fields.Str(
         required=True,
-        description='Identifier of the source template space.',
+        metadata=dict(description='Identifier of the source template space.'),
     )
     target_space = fields.Str(
         required=True,
-        description='Identifier of the target template space.',
+        metadata=dict(description='Identifier of the target template space.'),
     )
     source_points = fields.List(
         fields.List(fields.Float, validate=Length(equal=3)),
         required=True,
-        description='List of points to be transformed. Each point is a '
-                    '[x, y, z] triple of coordinates in millimetres.',
+        metadata=dict(
+            description='List of points to be transformed. Each point is a '
+                        '[x, y, z] triple of coordinates in millimetres.',
+        ),
     )
 
 
@@ -182,10 +201,55 @@ class TransformPointsResponseSchema(Schema):
     target_points = fields.List(
         fields.List(fields.Float, validate=Length(equal=3)),
         required=True,
-        description='Coordinates of the transformed points in the target '
-                    'space, in the same order as `source_points` in the '
-                    'request. Each point is returned as a [x, y, z] triple '
-                    'of coordinates in millimetres',
+        metadata=dict(
+            description='Coordinates of the transformed points in the target '
+                        'space, in the same order as `source_points` in the '
+                        'request. Each point is returned as a [x, y, z] '
+                        'triple of coordinates in millimetres',
+        ),
+    )
+
+
+class GetTransformCommandRequestSchema(Schema):
+    class Meta:
+        ordered = True
+
+    source_space = fields.Str(
+        required=True,
+        metadata=dict(
+            description='Identifier of the source template space.',
+            example='MNI 152 ICBM 2009c Nonlinear Asymmetric',
+        ),
+    )
+    target_space = fields.Str(
+        required=True,
+        metadata=dict(
+            description='Identifier of the target template space.',
+            example='MNI Colin 27',
+        ),
+    )
+    input_coords = fields.Str(
+        required=False,
+        load_default='auto',
+        metadata=dict(
+            description="How to interpret coordinates in the input image "
+                        "w.r.t. the transformations written in the image "
+                        "header. See AimsApplyTransform --help for the list "
+                        "of supported values.",
+            example='auto',
+        ),
+    )
+
+
+class GetTransformCommandResponseSchema(Schema):
+    transform_command = fields.List(
+        fields.Str(),
+        required=True,
+        metadata=dict(
+            description='AimsApplyTransform command to use for transforming '
+                        'data from source space to target space, given as a '
+                        'list ofcommandline arguments',
+        ),
     )
 
 
@@ -230,3 +294,108 @@ def transform_points(args):
         args['source_points'], transform_chain, cwd=g.transform_graph_cwd)
 
     return {'target_points': target_points}
+
+
+@bp.route('/get-mesh-transform-command')
+@bp.arguments(GetTransformCommandRequestSchema, location='query')
+# The error responses come first, the schemas are only used for
+# documentation
+@bp.response(ErrorResponseSchema,
+             code=400,
+             example={'message': 'source_space or target_space not found'})
+# Code 422 is raised by webargs for request validation errors
+@bp.response(ErrorResponseSchema,
+             code=422, description='Semantically invalid request')
+# The successful response must be the last response decorator, its schema
+# is used for serializing the response.
+@bp.response(GetTransformCommandResponseSchema,
+             example={
+                 'transform_command': ["AimsApplyTransform", "--help"],
+             })
+def get_mesh_transform_command(args):
+    """Get the transform command."""
+    source_space = args['source_space']
+    target_space = args['target_space']
+    input_coords = args['input_coords']
+
+    tg = _get_transform_graph()
+    try:
+        direct_transform_chain = tg.get_transform_chain(source_space,
+                                                        target_space)
+        inverse_transform_chain = tg.get_transform_chain(target_space,
+                                                         source_space)
+    except KeyError:
+        abort(400, errors=['source_space or target_space not found'])
+
+    transform_command = apply_transform.get_transform_command(
+        direct_transform_chain=direct_transform_chain,
+        inverse_transform_chain=inverse_transform_chain,
+        input_coords=input_coords,
+    )
+
+    response = jsonify(GetTransformCommandResponseSchema().dump({
+        'transform_command': transform_command,
+    }))
+
+    response.cache_control.public = True
+    response.cache_control.max_age = 86400  # 1 day
+    return response
+
+
+@bp.route('/get-image-transform-command')
+@bp.arguments(GetTransformCommandRequestSchema, location='query')
+# The error responses come first, the schemas are only used for
+# documentation
+@bp.response(ErrorResponseSchema,
+             code=400,
+             example={'message': 'source_space or target_space not found'})
+# Code 422 is raised by webargs for request validation errors
+@bp.response(ErrorResponseSchema,
+             code=422, description='Semantically invalid request')
+# The successful response must be the last response decorator, its schema
+# is used for serializing the response.
+@bp.response(GetTransformCommandResponseSchema,
+             example={
+                 'transform_command': ["AimsApplyTransform", "--help"],
+             })
+def get_image_transform_command(args):
+    """Get the transform command."""
+    source_space = args['source_space']
+    target_space = args['target_space']
+    input_coords = args['input_coords']
+
+    tg = _get_transform_graph()
+    try:
+        inverse_transform_chain = tg.get_transform_chain(target_space,
+                                                         source_space)
+    except KeyError:
+        abort(400, errors=['source_space or target_space not found'])
+
+    # For resampling images we have use AIMS image coordinates (whose origin is
+    # in the corner of the field of view), so we have to remove the last affine
+    # transformation of the chain, whose purpose is to go from these image
+    # coordinates to template coordinates (whose origin is usually centered
+    # around the center of the brain in the region of the anterior commissure).
+    #
+    # FIXME: This is a kind of hack that is specific to the way that the
+    # transform graph is stored as of now. The proper solution will need
+    # options to be added to AimsApplyTransform for properly specifying the
+    # output geometry (i.e. setting the FoV).
+    inverse_transform_chain = inverse_transform_chain[1:]
+    reference = inverse_transform_chain[0]
+    assert not reference.startswith('inv:')
+    assert not reference.endswith('.trm')
+
+    transform_command = apply_transform.get_transform_command(
+        inverse_transform_chain=inverse_transform_chain,
+        reference=reference,
+        input_coords=input_coords,
+    )
+
+    response = jsonify(GetTransformCommandResponseSchema().dump({
+        'transform_command': transform_command,
+    }))
+
+    response.cache_control.public = True
+    response.cache_control.max_age = 86400  # 1 day
+    return response

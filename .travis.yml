@@ -1,13 +1,20 @@
 version: ~> 1.0
+# As of 2021-07-16, using the arm64 architecture is a way to use the Partner
+# Queue, which is completely free of charge (whereas the default amd64
+# queue consumes paid credits, or free "OSS credits" that we have to
+# request from Travis Support). See this page for details:
+# https://docs.travis-ci.com/user/billing-overview/#partner-queue-solution
+arch:
+  - arm64
 os: linux
 language: python
-# Supported Ubuntu/Python version combinations are documented on
-# https://docs.travis-ci.com/user/languages/python/#python-versions
-dist: xenial
+dist: bionic
+
 python:
-  - "3.5"
+  # Remember to update the [travis] section of tox.ini.
   - "3.6"
   - "3.7"
   - "3.8"
+  - "3.9"
 install: pip install tox-travis
 script: tox

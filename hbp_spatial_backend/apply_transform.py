@@ -17,6 +17,7 @@
 import io
 import logging
 import re
+import shlex
 import subprocess
 import time
 
@@ -41,10 +42,10 @@ def transform_points(source_points, direct_transform_chain, cwd=None):
         '({0}, {1}, {2})'.format(*p) for p in source_points
     )
     if logger.isEnabledFor(logging.DEBUG):
-        import shlex
         logger.debug('Transforming %d points with: %s', len(source_points),
                      ' '.join(shlex.quote(arg) for arg in cmd))
     time_before = time.perf_counter()
+
     res = subprocess.run(
         cmd,
         check=True,
@@ -59,6 +60,27 @@ def transform_points(source_points, direct_transform_chain, cwd=None):
     target_points = list(parse_points_output(io.StringIO(res.stdout)))
     assert len(target_points) == len(source_points)
     return target_points
+
+
+def get_transform_command(direct_transform_chain=None,
+                          inverse_transform_chain=None,
+                          reference=None,
+                          input_coords=None):
+    assert ((direct_transform_chain is not None)
+            or (inverse_transform_chain is not None))
+
+    cmd = ['AimsApplyTransform']
+    if direct_transform_chain is not None:
+        for t in direct_transform_chain:
+            cmd.extend(['--direct-transform', t])
+    if inverse_transform_chain is not None:
+        for t in inverse_transform_chain:
+            cmd.extend(['--inverse-transform', t])
+    if input_coords:
+        cmd.extend(['--input-coords', input_coords])
+    if reference:
+        cmd.extend(['--reference', reference])
+    return cmd
 
 
 def transform_point(source_point, direct_transform_chain, cwd=None):

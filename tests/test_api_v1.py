@@ -18,10 +18,10 @@ import pytest
 
 
 @pytest.fixture
-def test_graph_yaml(tmpdir):
+def dummy_graph_yaml(tmpdir):
     graph_yaml = str(tmpdir / 'graph.yaml')
     with open(graph_yaml, 'w') as f:
-        f.write('{A: {B: identity}, B: {}}')
+        f.write('{A: {B: A_to_B}, B: {A: B_to_A}}')
     return graph_yaml
 
 
@@ -30,7 +30,7 @@ def fake_apply_transform(monkeypatch):
     from hbp_spatial_backend import apply_transform
 
     def transform_points_mock(source_points, transform_chain, cwd=None):
-        if transform_chain == ['identity']:
+        if transform_chain in (['A_to_B'], ['B_to_A']):
             return [tuple(point) for point in source_points]
         raise RuntimeError('Unexpected call')
 
@@ -38,26 +38,26 @@ def fake_apply_transform(monkeypatch):
                         transform_points_mock)
 
 
-def test__get_transform_graph(app, test_graph_yaml):
+def test__get_transform_graph(app, dummy_graph_yaml):
     from hbp_spatial_backend import api_v1
-    app.config['DEFAULT_TRANSFORM_GRAPH'] = test_graph_yaml
+    app.config['DEFAULT_TRANSFORM_GRAPH'] = dummy_graph_yaml
     with app.test_request_context():
         tg1 = api_v1._get_transform_graph()
         tg2 = api_v1._get_transform_graph()
     assert tg1 is tg2  # test that the graph is only loaded once per request
 
 
-def test_get_graph_yaml(app, client, test_graph_yaml):
-    app.config['DEFAULT_TRANSFORM_GRAPH'] = test_graph_yaml
+def test_get_graph_yaml(app, client, dummy_graph_yaml):
+    app.config['DEFAULT_TRANSFORM_GRAPH'] = dummy_graph_yaml
     response = client.get('/v1/graph.yaml')
     assert response.status_code == 200
-    with open(test_graph_yaml, 'rt') as f:
+    with open(dummy_graph_yaml, 'rt') as f:
         graph_yaml_contents = f.read()
     assert response.get_data(as_text=True) == graph_yaml_contents
 
 
-def test_transform_point_request_validation(app, client, test_graph_yaml):
-    app.config['DEFAULT_TRANSFORM_GRAPH'] = test_graph_yaml
+def test_transform_point_request_validation(app, client, dummy_graph_yaml):
+    app.config['DEFAULT_TRANSFORM_GRAPH'] = dummy_graph_yaml
     response = client.get('/v1/transform-point')
     assert response.status_code == 422
     response = client.get('/v1/transform-point',
@@ -95,8 +95,8 @@ def test_transform_point_request_validation(app, client, test_graph_yaml):
     assert response.status_code == 400
 
 
-def test_transform_points_request_validation(app, client, test_graph_yaml):
-    app.config['DEFAULT_TRANSFORM_GRAPH'] = test_graph_yaml
+def test_transform_points_request_validation(app, client, dummy_graph_yaml):
+    app.config['DEFAULT_TRANSFORM_GRAPH'] = dummy_graph_yaml
 
     response = client.get('/v1/transform-points')
     assert response.status_code == 405
@@ -131,3 +131,72 @@ def test_transform_points_request_validation(app, client, test_graph_yaml):
         'target_space': 'B'
     })
     assert response.status_code == 422
+
+
+def test_get_mesh_transform_command(app, client, dummy_graph_yaml):
+    app.config['DEFAULT_TRANSFORM_GRAPH'] = dummy_graph_yaml
+    response = client.get('/v1/get-mesh-transform-command')
+    assert response.status_code == 422
+    response = client.get('/v1/get-mesh-transform-command',
+                          query_string={'source_space': 'A',
+                                        'target_space': 'B'})
+    assert response.status_code == 200
+    assert 'transform_command' in response.json
+    assert response.json['transform_command'][0] == 'AimsApplyTransform'
+    txt_cmd = ' '.join(response.json['transform_command'])
+    assert '--input-coords auto' in txt_cmd
+    assert '--direct-transform A_to_B' in txt_cmd
+
+    response = client.get('/v1/get-mesh-transform-command',
+                          query_string={'source_space': 'A',
+                                        'target_space': 'nonexistent'})
+    assert response.status_code == 400
+
+    response = client.get('/v1/get-mesh-transform-command',
+                          query_string={'source_space': 'nonexistent',
+                                        'target_space': 'B'})
+    assert response.status_code == 400
+
+
+@pytest.fixture
+def dummy_image_graph_yaml(tmpdir):
+    graph_yaml = str(tmpdir / 'graph.yaml')
+    with open(graph_yaml, 'w') as f:
+        f.write('''\
+{
+  A: {Aimg: A_to_Aimg},
+  Aimg: {A: Aimg_to_A, Bimg: Aimg_to_Bimg},
+  Bimg: {B: Bimg_to_B, Aimg: Bimg_to_Aimg},
+  B: {Bimg: B_to_Bimg},
+}
+''')
+    return graph_yaml
+
+
+def test_get_image_transform_command(app, client,
+                                     dummy_image_graph_yaml):
+    app.config['DEFAULT_TRANSFORM_GRAPH'] = dummy_image_graph_yaml
+    response = client.get('/v1/get-image-transform-command')
+    assert response.status_code == 422
+    response = client.get('/v1/get-image-transform-command',
+                          query_string={'source_space': 'A',
+                                        'target_space': 'B'})
+    assert response.status_code == 200
+    assert 'transform_command' in response.json
+    assert response.json['transform_command'][0] == 'AimsApplyTransform'
+    txt_cmd = ' '.join(response.json['transform_command'])
+    assert '--input-coords auto' in txt_cmd
+    assert ('--inverse-transform Bimg_to_Aimg '
+            '--inverse-transform Aimg_to_A'
+            in txt_cmd)
+    assert '--reference Bimg_to_Aimg' in txt_cmd
+
+    response = client.get('/v1/get-image-transform-command',
+                          query_string={'source_space': 'A',
+                                        'target_space': 'nonexistent'})
+    assert response.status_code == 400
+
+    response = client.get('/v1/get-image-transform-command',
+                          query_string={'source_space': 'nonexistent',
+                                        'target_space': 'B'})
+    assert response.status_code == 400

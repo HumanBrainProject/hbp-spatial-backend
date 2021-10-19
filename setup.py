@@ -36,7 +36,8 @@ def find_source_url(*file_paths):
     raise RuntimeError("Unable to find SOURCE_URL string.")
 
 
-# Remember keep synchronized with the list of dependencies in tox.ini
+# Remember keep synchronized with the list of dependencies in
+# test-requirements.txt.
 tests_require = [
     "pytest",
     "requests ~= 2.5",

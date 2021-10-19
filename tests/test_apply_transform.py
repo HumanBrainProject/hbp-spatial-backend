@@ -41,6 +41,35 @@ def test_parse_points_output():
     assert res == [(1, 2, 3)]
 
 
+def test_get_transform_command(app):
+    with app.app_context():
+        cmd = apply_transform.get_transform_command(
+            ['A.ima', 'B.trm'],
+            ['inv:B.ima', 'inv:A.trm'],
+            reference='reference.nii',
+            input_coords='auto',
+        )
+
+    assert cmd[0] == 'AimsApplyTransform'
+    txt_cmd = ' '.join(cmd)
+    assert '--direct-transform A.ima --direct-transform B.trm' in txt_cmd
+    assert ('--inverse-transform inv:B.ima --inverse-transform inv:A.trm'
+            in txt_cmd)
+    assert '--reference reference.nii' in txt_cmd
+    assert '--input-coords auto' in txt_cmd
+
+    with app.app_context():
+        cmd = apply_transform.get_transform_command(
+            ['A.ima', 'B.trm'],
+        )
+    assert cmd[0] == 'AimsApplyTransform'
+    txt_cmd = ' '.join(cmd)
+    assert '--direct-transform A.ima --direct-transform B.trm' in txt_cmd
+    assert '--inverse-transform' not in cmd
+    assert '--reference' not in cmd
+    assert '--input-coords' not in cmd
+
+
 @unittest.mock.patch('subprocess.run', autospec=True)
 def test_transform_point(subprocess_run_mock, app):
     class CompletedProcessMock:

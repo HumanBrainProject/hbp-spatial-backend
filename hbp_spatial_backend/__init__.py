@@ -59,6 +59,7 @@ class DefaultConfig:
     OPENAPI_REDOC_VERSION = '2.0.0-rc.20'
     OPENAPI_SWAGGER_UI_PATH = 'swagger-ui'
     OPENAPI_SWAGGER_UI_VERSION = '3.24.2'
+    DEFAULT_TRANSFORM_GRAPH = ''
 
 
 # This function has a magic name which is recognized by flask as a factory for
@@ -112,7 +113,10 @@ def create_app(test_config=None):
     app.config.from_object(DefaultConfig)
     if test_config is None:
         # load the instance config, if it exists, when not testing
+        # Looks for config.py in instance dir
         app.config.from_pyfile("config.py", silent=True)
+        # Looks for configuration settings file
+        # pointed by HBP_SPATIAL_BACKEND_SETTINGS
         app.config.from_envvar("HBP_SPATIAL_BACKEND_SETTINGS", silent=True)
     else:
         # load the test config if passed in
@@ -123,6 +127,17 @@ def create_app(test_config=None):
         os.makedirs(app.instance_path)
     except OSError:
         pass
+
+    # Default transform graph is graph.yaml in instance dir
+    if not app.config['DEFAULT_TRANSFORM_GRAPH']:
+        app.config['DEFAULT_TRANSFORM_GRAPH'] = os.path.join(app.instance_path,
+                                                             'graph.yaml')
+
+    # Logs config dictionary
+    app.logger.info("Instance path : %s", app.instance_path)
+    app_dict = dict(app.config)
+    app_str = '\n'.join('{} = {}'.format(k, v) for k, v in app_dict.items())
+    app.logger.info("Logging dict ---> {0}".format(app_str))
 
     @app.route("/")
     def root():
