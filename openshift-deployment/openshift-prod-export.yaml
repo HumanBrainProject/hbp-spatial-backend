@@ -52,7 +52,7 @@ items:
       type: Git
     strategy:
       dockerStrategy:
-        dockerfilePath: Dockerfile
+        dockerfilePath: Dockerfile.server
         forcePull: true
       type: Docker
     successfulBuildsHistoryLimit: 5
