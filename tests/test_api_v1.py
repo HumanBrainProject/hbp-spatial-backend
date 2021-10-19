@@ -131,3 +131,72 @@ def test_transform_points_request_validation(app, client, dummy_graph_yaml):
         'target_space': 'B'
     })
     assert response.status_code == 422
+
+
+def test_get_mesh_transform_command(app, client, dummy_graph_yaml):
+    app.config['DEFAULT_TRANSFORM_GRAPH'] = dummy_graph_yaml
+    response = client.get('/v1/get-mesh-transform-command')
+    assert response.status_code == 422
+    response = client.get('/v1/get-mesh-transform-command',
+                          query_string={'source_space': 'A',
+                                        'target_space': 'B'})
+    assert response.status_code == 200
+    assert 'transform_command' in response.json
+    assert response.json['transform_command'][0] == 'AimsApplyTransform'
+    txt_cmd = ' '.join(response.json['transform_command'])
+    assert '--input-coords auto' in txt_cmd
+    assert '--direct-transform A_to_B' in txt_cmd
+
+    response = client.get('/v1/get-mesh-transform-command',
+                          query_string={'source_space': 'A',
+                                        'target_space': 'nonexistent'})
+    assert response.status_code == 400
+
+    response = client.get('/v1/get-mesh-transform-command',
+                          query_string={'source_space': 'nonexistent',
+                                        'target_space': 'B'})
+    assert response.status_code == 400
+
+
+@pytest.fixture
+def dummy_image_graph_yaml(tmpdir):
+    graph_yaml = str(tmpdir / 'graph.yaml')
+    with open(graph_yaml, 'w') as f:
+        f.write('''\
+{
+  A: {Aimg: A_to_Aimg},
+  Aimg: {A: Aimg_to_A, Bimg: Aimg_to_Bimg},
+  Bimg: {B: Bimg_to_B, Aimg: Bimg_to_Aimg},
+  B: {Bimg: B_to_Bimg},
+}
+''')
+    return graph_yaml
+
+
+def test_get_image_transform_command(app, client,
+                                     dummy_image_graph_yaml):
+    app.config['DEFAULT_TRANSFORM_GRAPH'] = dummy_image_graph_yaml
+    response = client.get('/v1/get-image-transform-command')
+    assert response.status_code == 422
+    response = client.get('/v1/get-image-transform-command',
+                          query_string={'source_space': 'A',
+                                        'target_space': 'B'})
+    assert response.status_code == 200
+    assert 'transform_command' in response.json
+    assert response.json['transform_command'][0] == 'AimsApplyTransform'
+    txt_cmd = ' '.join(response.json['transform_command'])
+    assert '--input-coords auto' in txt_cmd
+    assert ('--inverse-transform Bimg_to_Aimg '
+            '--inverse-transform Aimg_to_A'
+            in txt_cmd)
+    assert '--reference Bimg_to_Aimg' in txt_cmd
+
+    response = client.get('/v1/get-image-transform-command',
+                          query_string={'source_space': 'A',
+                                        'target_space': 'nonexistent'})
+    assert response.status_code == 400
+
+    response = client.get('/v1/get-image-transform-command',
+                          query_string={'source_space': 'nonexistent',
+                                        'target_space': 'B'})
+    assert response.status_code == 400
