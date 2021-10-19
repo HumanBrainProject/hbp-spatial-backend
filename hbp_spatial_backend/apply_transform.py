@@ -17,6 +17,7 @@
 import io
 import logging
 import re
+import shlex
 import subprocess
 import time
 
@@ -40,11 +41,9 @@ def transform_points(source_points, direct_transform_chain, cwd=None):
     input_points_str = '\n'.join(
         '({0}, {1}, {2})'.format(*p) for p in source_points
     )
-    # if logger.isEnabledFor(logging.DEBUG):
-    import shlex
-    logger.info('Transforming %d points with: %s', len(source_points),
-                ' '.join(shlex.quote(arg) for arg in cmd))
-    logger.info(' '.join(cmd))
+    if logger.isEnabledFor(logging.DEBUG):
+        logger.debug('Transforming %d points with: %s', len(source_points),
+                     ' '.join(shlex.quote(arg) for arg in cmd))
     time_before = time.perf_counter()
 
     res = subprocess.run(
