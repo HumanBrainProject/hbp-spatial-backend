@@ -58,6 +58,17 @@ def test_get_transform_command(app):
     assert '--reference reference.nii' in txt_cmd
     assert '--input-coords auto' in txt_cmd
 
+    with app.app_context():
+        cmd = apply_transform.get_transform_command(
+            ['A.ima', 'B.trm'],
+        )
+    assert cmd[0] == 'AimsApplyTransform'
+    txt_cmd = ' '.join(cmd)
+    assert '--direct-transform A.ima --direct-transform B.trm' in txt_cmd
+    assert '--inverse-transform' not in cmd
+    assert '--reference' not in cmd
+    assert '--input-coords' not in cmd
+
 
 @unittest.mock.patch('subprocess.run', autospec=True)
 def test_transform_point(subprocess_run_mock, app):
