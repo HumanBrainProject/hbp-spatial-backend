@@ -81,36 +81,48 @@ class TransformPointRequestSchema(Schema):
 
     source_space = fields.Str(
         required=True,
-        description='Identifier of the source template space.',
-        example='MNI 152 ICBM 2009c Nonlinear Asymmetric',
+        metadata=dict(
+            description='Identifier of the source template space.',
+            example='MNI 152 ICBM 2009c Nonlinear Asymmetric',
+        ),
     )
     target_space = fields.Str(
         required=True,
-        description='Identifier of the target template space.',
-        example='Big Brain (Histology)',
+        metadata=dict(
+            description='Identifier of the target template space.',
+            example='Big Brain (Histology)',
+        ),
     )
     x = fields.Float(
         required=True,
-        description='X coordinate of the source point, in millimetres.',
-        example=1.0,
+        metadata=dict(
+            description='X coordinate of the source point, in millimetres.',
+            example=1.0,
+        ),
     )
     y = fields.Float(
         required=True,
-        description='Y coordinate of the source point, in millimetres.',
-        example=2.0
+        metadata=dict(
+            description='Y coordinate of the source point, in millimetres.',
+            example=2.0,
+        ),
     )
     z = fields.Float(
         required=True,
-        description='Z coordinate of the source point, in millimetres.',
-        example=3.0,
+        metadata=dict(
+            description='Z coordinate of the source point, in millimetres.',
+            example=3.0,
+        ),
     )
 
 
 class TransformPointResponseSchema(Schema):
     target_point = fields.List(
         fields.Float, validate=Length(equal=3), required=True,
-        description='Coordinates of the transformed point in the target '
-                    'space, expressed as [x, y, z], in millimetres.',
+        metadata=dict(
+            description='Coordinates of the transformed point in the target '
+                        'space, expressed as [x, y, z], in millimetres.',
+        ),
     )
 
 
@@ -169,17 +181,19 @@ class TransformPointsRequestSchema(Schema):
 
     source_space = fields.Str(
         required=True,
-        description='Identifier of the source template space.',
+        metadata=dict(description='Identifier of the source template space.'),
     )
     target_space = fields.Str(
         required=True,
-        description='Identifier of the target template space.',
+        metadata=dict(description='Identifier of the target template space.'),
     )
     source_points = fields.List(
         fields.List(fields.Float, validate=Length(equal=3)),
         required=True,
-        description='List of points to be transformed. Each point is a '
-                    '[x, y, z] triple of coordinates in millimetres.',
+        metadata=dict(
+            description='List of points to be transformed. Each point is a '
+                        '[x, y, z] triple of coordinates in millimetres.',
+        ),
     )
 
 
@@ -187,10 +201,12 @@ class TransformPointsResponseSchema(Schema):
     target_points = fields.List(
         fields.List(fields.Float, validate=Length(equal=3)),
         required=True,
-        description='Coordinates of the transformed points in the target '
-                    'space, in the same order as `source_points` in the '
-                    'request. Each point is returned as a [x, y, z] triple '
-                    'of coordinates in millimetres',
+        metadata=dict(
+            description='Coordinates of the transformed points in the target '
+                        'space, in the same order as `source_points` in the '
+                        'request. Each point is returned as a [x, y, z] '
+                        'triple of coordinates in millimetres',
+        ),
     )
 
 
@@ -200,22 +216,28 @@ class GetTransformCommandRequestSchema(Schema):
 
     source_space = fields.Str(
         required=True,
-        description='Identifier of the source template space.',
-        example='MNI 152 ICBM 2009c Nonlinear Asymmetric',
+        metadata=dict(
+            description='Identifier of the source template space.',
+            example='MNI 152 ICBM 2009c Nonlinear Asymmetric',
+        ),
     )
     target_space = fields.Str(
         required=True,
-        description='Identifier of the target template space.',
-        example='MNI Colin 27',
+        metadata=dict(
+            description='Identifier of the target template space.',
+            example='MNI Colin 27',
+        ),
     )
     input_coords = fields.Str(
         required=False,
-        description="How to interpret coordinates in the input image w.r.t. "
-                    "the transformations written in the image header. See "
-                    "AimsApplyTransform --help for the list of supported "
-                    "values.",
         load_default='auto',
-        example='auto',
+        metadata=dict(
+            description="How to interpret coordinates in the input image "
+                        "w.r.t. the transformations written in the image "
+                        "header. See AimsApplyTransform --help for the list "
+                        "of supported values.",
+            example='auto',
+        ),
     )
 
 
@@ -223,9 +245,11 @@ class GetTransformCommandResponseSchema(Schema):
     transform_command = fields.List(
         fields.Str(),
         required=True,
-        description='AimsApplyTransform command to use for transforming data '
-                    'from source space to target space, given as a list of '
-                    'commandline arguments',
+        metadata=dict(
+            description='AimsApplyTransform command to use for transforming '
+                        'data from source space to target space, given as a '
+                        'list ofcommandline arguments',
+        ),
     )
 
 
