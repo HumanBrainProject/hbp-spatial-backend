@@ -107,6 +107,12 @@ We can also have access to the server from outside the container:
    DOCKER_IP=172.17.0.1
    curl -X GET "http://$DOCKER_IP:8080/v1/graph.yaml" -H  "accept: */*"
 
+Note that you can also recover the same information directly from the web API:
+
+.. code-block:: shell
+
+   curl -X GET "https://hbp-spatial-backend.apps.hbp.eu/v1/graph.yaml" -H  "accept: */*"
+
 Now, it is time to get our first transformation:
 
 Getting our first local transformation
