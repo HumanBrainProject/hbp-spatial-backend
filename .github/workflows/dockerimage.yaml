@@ -1,0 +1,37 @@
+name: '[build] docker image'
+
+env:
+  DOCKER_REPO: docker-registry.ebrains.eu
+  DOCKER_NAMESPACE: hbp-spatial-backend
+  DOCKER_IMAGE: server
+  DOCKER_TAG: latest
+  DOCKER_USERNAME: ${{ secrets.DOCKER_USERNAME }}
+  DOCKER_PASSWORD: ${{ secrets.DOCKER_PASSWORD }}
+
+on:
+  push:
+    branches:
+    - main
+jobs:
+  build-server-image:
+    if: github.repository_owner == 'HumanBrainProject' and ${{ env.DOCKER_USERNAME != '' }} and ${{ env.DOCKER_PASSWORD != '' }}
+    runs-on: ubuntu-latest
+    steps:
+    - uses: actions/checkout@v4
+    - name: 'Build and Push'
+      run: |
+        FULL_TAG=${{ env.DOCKER_REPO }}/${{ env.DOCKER_NAMESPACE }}/${{ env.DOCKER_IMAGE }}:${{ env.DOCKER_TAG }}
+        echo FULL_TAG: $FULL_TAG
+        docker build -t $FULL_TAG -f Dockerfile.server .
+        echo Build successful
+        echo Login
+        docker login \
+          -u '${{ env.DOCKER_USERNAME }}' \
+          -P '${{ env.DOCKER_PASSWORD }}' \
+          ${{ env.DOCKER_REPO }}
+        echo Login Successful
+        echo Pushing image
+        docker push $FULL_TAG
+        echo Pushing image successful
+
+        
