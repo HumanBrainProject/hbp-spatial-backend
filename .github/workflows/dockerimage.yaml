@@ -33,5 +33,3 @@ jobs:
         echo Pushing image
         docker push $FULL_TAG
         echo Pushing image successful
-
-        

@@ -62,7 +62,7 @@ setuptools.setup(
         # see https://github.com/yaml/pyyaml/issues/723
         # see https://github.com/yaml/pyyaml/issues/724
         "PyYAML ~= 6.0.1",
-        # see https://stackoverflow.com/questions/72191560/importerror-cannot-import-name-soft-unicode-from-markupsafe
+        # see https://stackoverflow.com/questions/72191560/importerror-cannot-import-name-soft-unicode-from-markupsafe # noqa: E501
         "markupsafe==2.0.1",
     ],
     python_requires="~= 3.5",

@@ -18,12 +18,9 @@ pod_name=$(kubectl get pod -l app=busy-box -o jsonpath="{.items[0].metadata.name
 
 for f in $(find /volatile/hbp-spatial-transformations-data/)
 do
-    
+
     kubectl cp $f $pod_name:/static-data/${f#/volatile/hbp-spatial-transformations-data/}
 done
 ```
 
 3/ Start application with `helm install prod .helm/hbp_spatial_backend`
-
-
-

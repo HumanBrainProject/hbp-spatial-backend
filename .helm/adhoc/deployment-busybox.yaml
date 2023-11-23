@@ -33,6 +33,3 @@ spec:
         volumeMounts:
         - mountPath: /static-data
           name: data-volume
-
-
-            

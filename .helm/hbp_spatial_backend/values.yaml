@@ -54,7 +54,7 @@ ingress:
       paths:
         - path: /
           pathType: ImplementationSpecific
-  tls: 
+  tls:
    - secretName: siibra-spatial-backend-secret
      hosts:
        - siibra-spatial-backend.apps.tc.humanbrainproject.eu
@@ -89,7 +89,7 @@ volumes:
       name: siibra-spatial-backend
 
 # Additional volumeMounts on the output Deployment definition.
-volumeMounts: 
+volumeMounts:
   - mountPath: /static-data
     name: data-volume
   - mountPath: /instance
