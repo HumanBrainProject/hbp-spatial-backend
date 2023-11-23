@@ -9,7 +9,7 @@ jobs:
       matrix:
         # Python versions used in BrainVISA base images (i.e. Ubuntu LTS,
         # at the moment 18.04 and 20.04) + the latest stable Python version
-        python-version: [ '3.10', '3.8', '3.6' ]
+        python-version: [ '3.10', '3.8' ]
         os: ['ubuntu-latest']
         include:
         - python-version: '3.6'
