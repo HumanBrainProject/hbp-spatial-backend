@@ -59,6 +59,7 @@ setuptools.setup(
         "flask-smorest ~= 0.18.4",
         "marshmallow ~= 3.0",
         "PyYAML ~= 5.1",
+        "Cython < 3.0",
     ],
     python_requires="~= 3.5",
     extras_require={
