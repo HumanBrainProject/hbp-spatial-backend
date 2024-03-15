@@ -9,12 +9,13 @@ repos:
     -   id: check-merge-conflict
     -   id: check-symlinks
     -   id: check-yaml
+        exclude: ^\.helm/hbp_spatial_backend
     -   id: end-of-file-fixer
     -   id: debug-statements
     -   id: trailing-whitespace
 
--   repo: https://gitlab.com/pycqa/flake8
-    rev: 3.7.9
+-   repo: https://github.com/pycqa/flake8
+    rev: 3.9.2
     hooks:
     -   id: flake8
         additional_dependencies: [pep8-naming]

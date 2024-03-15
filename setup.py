@@ -58,7 +58,12 @@ setuptools.setup(
         "Flask-Cors",
         "flask-smorest ~= 0.18.4",
         "marshmallow ~= 3.0",
-        "PyYAML ~= 5.1",
+        # see https://github.com/yaml/pyyaml/issues/601
+        # see https://github.com/yaml/pyyaml/issues/723
+        # see https://github.com/yaml/pyyaml/issues/724
+        "PyYAML ~= 6.0.1",
+        # see https://stackoverflow.com/questions/72191560/importerror-cannot-import-name-soft-unicode-from-markupsafe # noqa: E501
+        "markupsafe==2.0.1",
     ],
     python_requires="~= 3.5",
     extras_require={

@@ -1,0 +1,35 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: busy-box
+  labels:
+    app: busy-box
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: busy-box
+  template:
+    metadata:
+      labels:
+        app: busy-box
+    spec:
+      volumes:
+      - name: data-volume
+        persistentVolumeClaim:
+          claimName: data-volume-claim
+      containers:
+      - name: busybox
+        image: busybox:latest
+        command: ["tail"]
+        args: ["-f", "/dev/null"]
+        resources:
+          limits:
+            cpu: 100m
+            memory: 128Mi
+          requests:
+            cpu: 100m
+            memory: 128Mi
+        volumeMounts:
+        - mountPath: /static-data
+          name: data-volume
