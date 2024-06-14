@@ -4,7 +4,7 @@ metadata:
   name: spatial-old-hostname-certificate
 spec:
   secretName: spatial-old-hostname-secret
-  renewBefore: 120h 
+  renewBefore: 120h
   commonName: hbp-spatial-backend.apps.hbp.eu
   isCA: false
   privateKey:
@@ -36,7 +36,7 @@ spec:
         backend:
           service:
             name: prod-hbp-spatial-backend
-            port: 
+            port:
               number: 8080
   tls:
   - secretName: spatial-old-hostname-secret
