@@ -18,9 +18,9 @@ Public deployments
 
 A production deployment (following the ``master`` branch) is deployed on https://hbp-spatial-backend.apps.hbp.eu. |uptime-prod|
 
-The ``dev`` branch is deployed on https://hbp-spatial-backend.apps-dev.hbp.eu. |uptime-dev|
+A docker image is pushed to `docker-registry.ebrains.eu/hbp-spatial-backend/server:latest <https://docker-registry.ebrains.eu/harbor/projects/112/repositories/server>`_
 
-The public deployments are managed by OpenShift clusters, the relevant configuration is described in `<openshift-deployment/>`_.
+The public deployments are managed by helm and kubernetes, the relevant configuration is described in `<.helm/>`_.
 
 
 Documentation
@@ -240,6 +240,4 @@ This repository uses `pre-commit`_ to ensure that all committed code follows min
 
 .. |uptime-prod| image:: https://img.shields.io/uptimerobot/ratio/7/m783468831-04ba4c898048519b8c7b5a2f?style=flat-square
    :alt: Weekly uptime ratio of the production instance
-.. |uptime-dev| image:: https://img.shields.io/uptimerobot/ratio/7/m783468851-2872ab9d303cfa0973445798?style=flat-square
-   :alt: Weekly uptime ratio of the development instance
 .. _pre-commit: https://pre-commit.com/
