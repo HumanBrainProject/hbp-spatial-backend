@@ -27,6 +27,7 @@ metadata:
   labels:
     name: spatial-old-hostname-ingress
 spec:
+  ingressClassName: nginx
   rules:
   - host: hbp-spatial-backend.apps.hbp.eu
     http:

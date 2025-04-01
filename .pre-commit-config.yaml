@@ -9,7 +9,8 @@ repos:
     -   id: check-merge-conflict
     -   id: check-symlinks
     -   id: check-yaml
-        exclude: ^\.helm/hbp_spatial_backend
+        exclude: ^\.helm/hbp_spatial_backend/templates
+        args: [--allow-multiple-documents]
     -   id: end-of-file-fixer
     -   id: debug-statements
     -   id: trailing-whitespace
