@@ -54,10 +54,17 @@ ingress:
       paths:
         - path: /
           pathType: ImplementationSpecific
+    - host: siibra-spatial-backend.apps.ebrains.eu
+      paths:
+        - path: /
+          pathType: ImplementationSpecific
   tls:
    - secretName: siibra-spatial-backend-secret
      hosts:
        - siibra-spatial-backend.apps.tc.humanbrainproject.eu
+   - secretName: siibra-spatial-backend-canonical-secret
+     hosts:
+       - siibra-spatial-backend.apps.ebrains.eu
 
 resources:
   # We usually recommend not to specify default resources and to leave this as a conscious
@@ -67,9 +74,11 @@ resources:
   limits:
     cpu: 300m
     memory: 1024Mi
+    ephemeral-storage: 512Mi
   requests:
     cpu: 150m
     memory: 256Mi
+    ephemeral-storage: 512Mi
 
 autoscaling:
   enabled: false
