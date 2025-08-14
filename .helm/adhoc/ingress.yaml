@@ -1,0 +1,39 @@
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: hbp-spatial-backend-ingress
+  labels:
+    name: hbp-spatial-backend-ingress
+  annotations:
+    nginx.ingress.kubernetes.io/app-root: "/redoc"
+spec:
+  ingressClassName: nginx
+  rules:
+  - host: siibra-spatial-backend.apps.ebrains.eu
+    http:
+      paths:
+      - path: /
+        pathType: ImplementationSpecific
+        backend:
+          service:
+            name: prod-hbp-spatial-backend
+            port: 
+              number: 8080
+  - host: siibra-spatial-backend-dev.apps.tc.humanbrainproject.eu
+    http:
+      paths:
+      - path: /
+        pathType: ImplementationSpecific
+        backend:
+          service:
+            name: dev-hbp-spatial-backend
+            port: 
+              number: 8080
+  tls:
+   - secretName: siibra-spatial-backend-canonical-secret
+     hosts:
+       - siibra-spatial-backend.apps.ebrains.eu
+
+   - secretName: siibra-spatial-backend-dev-secret
+     hosts:
+       - siibra-spatial-backend-dev.apps.tc.humanbrainproject.eu

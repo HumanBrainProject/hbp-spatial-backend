@@ -48,6 +48,11 @@ spec:
             httpGet:
               path: /health
               port: http
+          env:
+            {{- range $key, $val := .Values.envObj }}
+            - name: {{ $key }}
+              value: {{ $val }}
+            {{- end }}
           resources:
             {{- toYaml .Values.resources | nindent 12 }}
           {{- with .Values.volumeMounts }}
