@@ -1,4 +1,4 @@
-FROM jchavas/brainvisa-aims:latest
+FROM brainvisa-aims:latest
 
 ###############################
 # 1. Install packages as root #
