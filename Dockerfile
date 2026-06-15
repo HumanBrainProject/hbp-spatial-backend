@@ -1,4 +1,5 @@
-FROM jchavas/brainvisa-aims:latest
+# FROM jchavas/brainvisa-aims:latest
+FROM brainvisa-aims:latest
 
 ###############################
 # 1. Install packages as root #
@@ -11,6 +12,10 @@ RUN apt-get update \
         python3-pip \
         python3-wheel \
         python3-venv \
+        python3-setuptools \
+        python3-wheel \
+        python3-pyproject-api \
+        libpython3.12-dev \
         build-essential \
         git \
         wget \
@@ -22,8 +27,6 @@ RUN apt-get update \
 # # to deal with non-ASCII characters in source
 ENV LANG=C.UTF-8
 
-RUN python3 -m pip install --no-cache-dir setuptools wheel
-
 ###############################################
 # 1. Install hbp-spatial-backend in virtualenv#
 ###############################################
@@ -32,12 +35,12 @@ COPY . /source
 
 RUN python3 -m venv /opt/venv
 RUN . /opt/venv/bin/activate \
-    && cd /source \
-    && pip install -e .[dev]
+    && pip install gunicorn \
+    && pip install gevent
 
 RUN . /opt/venv/bin/activate \
-    && pip install gunicorn \
-    && pip install gevent==1.4
+    && cd /source \
+    && pip install -e .[dev]
 
 RUN apt-get update \
     && apt-get remove python3-dev \
@@ -80,7 +83,7 @@ RUN mkdir -p ${INSTANCE_PATH} && chown root:root ${INSTANCE_PATH}
 ENV FLASK_APP hbp_spatial_backend
 EXPOSE 8080
 ENTRYPOINT ln -sf \
-    ${TRANSFORMATION_DATA_PATH}/DISCO_20181004_sigV30_DARTEL_20181004_reg_x4/* \
+    ${TRANSFORMATION_DATA_PATH}/DISCO_20181004_sigV30_DARTEL_20260422_reg_x5/* \
     ${INSTANCE_PATH} \
     && . /opt/venv/bin/activate \
     && gunicorn --access-logfile=- \

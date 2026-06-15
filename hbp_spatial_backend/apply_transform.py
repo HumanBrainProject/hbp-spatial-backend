@@ -27,17 +27,17 @@ from flask import current_app
 logger = logging.getLogger(__name__)
 
 
-def transform_points(source_points, direct_transform_chain, cwd=None):
-    transform_params = []
-    for t in direct_transform_chain:
-        transform_params.extend(['--direct-transform', t])
-    cmd = [
-        'AimsApplyTransform',
-        '--points',
-        '--mmap-fields',
-        '--input', '-',
-        '--output', '-'
-    ] + transform_params
+def transform_points(source_points, input_space, output_space, graph,
+                     cwd=None):
+    cmd = ['AimsApplyTransform',
+           '-g', graph,
+           '--points',
+           '--mmap-fields',
+           '--input-coords', input_space,
+           '--output-space', output_space,
+           '--input', '-',
+           '--output', '-'
+          ]
     input_points_str = '\n'.join(
         '({0}, {1}, {2})'.format(*p) for p in source_points
     )
@@ -62,30 +62,26 @@ def transform_points(source_points, direct_transform_chain, cwd=None):
     return target_points
 
 
-def get_transform_command(direct_transform_chain=None,
-                          inverse_transform_chain=None,
-                          reference=None,
-                          input_coords=None):
-    assert ((direct_transform_chain is not None)
-            or (inverse_transform_chain is not None))
-
-    cmd = ['AimsApplyTransform']
-    if direct_transform_chain is not None:
-        for t in direct_transform_chain:
-            cmd.extend(['--direct-transform', t])
-    if inverse_transform_chain is not None:
-        for t in inverse_transform_chain:
-            cmd.extend(['--inverse-transform', t])
-    if input_coords:
-        cmd.extend(['--input-coords', input_coords])
+def get_transform_command(input_space,
+                          graph,
+                          output_space=None,
+                          output_coords=None,
+                          reference=None,):
+    cmd = ['AimsApplyTransform',
+           '-g', graph,
+           '--input-coords', input_space]
+    if output_space:
+        cmd += ['--output-space', output_space]
+    if output_coords:
+        cmd += ['--output-coords', output_coords]
     if reference:
         cmd.extend(['--reference', reference])
     return cmd
 
 
-def transform_point(source_point, direct_transform_chain, cwd=None):
+def transform_point(source_point, input_space, output_space, graph, cwd=None):
     target_points = transform_points([source_point],
-                                     direct_transform_chain,
+                                     input_space, output_space, graph,
                                      cwd=cwd)
     assert len(target_points) == 1
     return target_points[0]

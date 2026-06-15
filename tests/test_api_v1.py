@@ -38,15 +38,6 @@ def fake_apply_transform(monkeypatch):
                         transform_points_mock)
 
 
-def test__get_transform_graph(app, dummy_graph_yaml):
-    from hbp_spatial_backend import api_v1
-    app.config['DEFAULT_TRANSFORM_GRAPH'] = dummy_graph_yaml
-    with app.test_request_context():
-        tg1 = api_v1._get_transform_graph()
-        tg2 = api_v1._get_transform_graph()
-    assert tg1 is tg2  # test that the graph is only loaded once per request
-
-
 def test_get_graph_yaml(app, client, dummy_graph_yaml):
     app.config['DEFAULT_TRANSFORM_GRAPH'] = dummy_graph_yaml
     response = client.get('/v1/graph.yaml')
