@@ -29,8 +29,9 @@ def dummy_graph_yaml(tmpdir):
 def fake_apply_transform(monkeypatch):
     from hbp_spatial_backend import apply_transform
 
-    def transform_points_mock(source_points, transform_chain, cwd=None):
-        if transform_chain in (['A_to_B'], ['B_to_A']):
+    def transform_points_mock(source_points, input_space, output_space, graph,
+                              cwd=None):
+        if (input_space, output_space) in (('A', 'B'), ('B', 'A')):
             return [tuple(point) for point in source_points]
         raise RuntimeError('Unexpected call')
 
