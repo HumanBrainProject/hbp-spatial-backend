@@ -21,8 +21,7 @@ RUN (echo "export PIXI_HOME=/usr/local" && wget -qO- https://pixi.sh/install.sh)
 ##########################################
 
 # brainvisa-aims install directory has been generated using script.sh
-COPY packages /packages
-RUN cd /usr/local && pixi init -c /packages -c https://brainvisa.info/neuro-forge -c conda-forge && pixi add soma && pixi run bv_update_bin_links && rm -rf /packages
+RUN cd /usr/local && pixi init -c https://brainvisa.info/neuro-forge -c conda-forge && pixi add soma && pixi run bv_update_bin_links
 # temp: fix small bug
 RUN touch /usr/local/activate.sh
 
