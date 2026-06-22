@@ -24,16 +24,19 @@ jobs:
     steps:
     - uses: actions/checkout@v4
     - name: 'Setting tag'
-      if: ${{ contains(github.ref, 'imgbuild') && env.DOCKER_USERNAME != '' && env.DOCKER_PASSWORD != '' }}
+      if: ${{ env.DOCKER_USERNAME != '' && env.DOCKER_PASSWORD != '' }}
       run: |
-        echo BASE_TAG=-imgbuild >> $GITHUB_ENV
+        if [[ "${{ github.ref }}" == *"imgbuild"* ]]
+        then
+          echo BASE_TAG=-imgbuild >> $GITHUB_ENV
+        fi
     
     - name: 'export env var'
       id: export-env-var
       run: |
         BASE_IMG=${{ env.DOCKER_REPO }}/${{ env.DOCKER_NAMESPACE }}/${{ env.DOCKER_IMAGE }}
         echo BASE_IMG=$BASE_IMG >> $GITHUB_OUTPUT
-        echo BASE_TAG=${BASE_TAG} >> $GITHUB_OUTPUT
+        echo BASE_TAG=$BASE_TAG >> $GITHUB_OUTPUT
 
   build-base-image:
     needs:
