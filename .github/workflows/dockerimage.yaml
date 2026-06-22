@@ -12,24 +12,68 @@ on:
   push:
     branches:
     - main
+    - imgbuild
 jobs:
-  build-server-image:
-    if: github.repository_owner == 'HumanBrainProject' and ${{ env.DOCKER_USERNAME != '' }} and ${{ env.DOCKER_PASSWORD != '' }}
+
+  setup-envvar:
+    if: github.repository_owner == 'HumanBrainProject' and ${{ env.DOCKER_USERNAME != '' }} and ${{ env.DOCKER_PASSWORD != '' } }
+    runs-on: ubuntu-latest
+    outputs:
+      BASE_IMG: ${{ steps.export-env-var.outputs.BASE_IMG }}
+      BASE_TAG: ${{ steps.export-env-var.outputs.BASE_TAG }}
+    steps:
+    - uses: actions/checkout@v4
+    - name: 'Setting tag'
+      if: ${{ contains(github.ref, 'imgbuild') }}
+      run: |
+        echo BASE_TAG=-imgbuild >> $GITHUB_ENV
+    
+    - name: 'export env var'
+      id: export-env-var
+      run: |
+        BASE_IMG=${{ env.DOCKER_REPO }}/${{ env.DOCKER_NAMESPACE }}/${{ env.DOCKER_IMAGE }}
+        echo BASE_IMG=$BASE_IMG >> $GITHUB_OUTPUT
+        echo BASE_TAG=${BASE_TAG} >> $GITHUB_OUTPUT
+
+  build-base-image:
+    needs:
+    - setup-envvar
+    env:
+      IMG_TAG: "${{ needs.setup-envvar.outputs.BASE_IMG }}:base${{ needs.setup-envvar.outputs.BASE_TAG }}"
     runs-on: ubuntu-latest
     steps:
     - uses: actions/checkout@v4
-    - name: 'Build and Push'
+    - name: Build base image
       run: |
-        FULL_TAG=${{ env.DOCKER_REPO }}/${{ env.DOCKER_NAMESPACE }}/${{ env.DOCKER_IMAGE }}:${{ env.DOCKER_TAG }}
-        echo FULL_TAG: $FULL_TAG
-        docker build -t $FULL_TAG -f Dockerfile.server .
-        echo Build successful
-        echo Login
-        docker login \
+        docker build -t '${{ env.IMG_TAG }}' .
+    - name: Push
+      run: |
+        curl https://${{ env.DOCKER_REPO }} # or else docker login will fail
+        echo '${{ env.DOCKER_PASSWORD }}' | docker login \
           -u '${{ env.DOCKER_USERNAME }}' \
-          -P '${{ env.DOCKER_PASSWORD }}' \
+          --password-stdin \
           ${{ env.DOCKER_REPO }}
-        echo Login Successful
-        echo Pushing image
-        docker push $FULL_TAG
-        echo Pushing image successful
+        docker push '${{ env.IMG_TAG }}'
+
+  # build-server-image:
+  #   needs:
+  #   - build-base-image
+  #   - setup-envvar
+  #   runs-on: ubuntu-latest
+  #   steps:
+  #   - uses: actions/checkout@v4
+  #   - name: 'Build and Push'
+  #     run: |
+  #       FULL_TAG=${{ env.DOCKER_REPO }}/${{ env.DOCKER_NAMESPACE }}/${{ env.DOCKER_IMAGE }}:${{ env.DOCKER_TAG }}
+  #       echo FULL_TAG: $FULL_TAG
+  #       docker build -t $FULL_TAG -f Dockerfile.server .
+  #       echo Build successful
+  #       echo Login
+  #       docker login \
+  #         -u '${{ env.DOCKER_USERNAME }}' \
+  #         -P '${{ env.DOCKER_PASSWORD }}' \
+  #         ${{ env.DOCKER_REPO }}
+  #       echo Login Successful
+  #       echo Pushing image
+  #       docker push $FULL_TAG
+  #       echo Pushing image successful
