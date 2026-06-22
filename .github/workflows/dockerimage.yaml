@@ -50,10 +50,11 @@ jobs:
       run: |
         curl https://${{ env.DOCKER_REPO }} # or else docker login will fail
         echo '${{ env.DOCKER_PASSWORD }}' | docker login \
-          -u '${{ env.DOCKER_USERNAME }}' \
+          --username '${{ env.DOCKER_USERNAME }}' \
           --password-stdin \
-          ${{ env.DOCKER_REPO }}
+          '${{ env.DOCKER_REPO }}'
         docker push '${{ env.IMG_TAG }}'
+        docker logout '${{ env.DOCKER_REPO }}'
 
   # build-server-image:
   #   needs:
