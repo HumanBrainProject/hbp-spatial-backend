@@ -16,7 +16,7 @@ on:
 jobs:
 
   setup-envvar:
-    if: github.repository_owner == 'HumanBrainProject' and ${{ env.DOCKER_USERNAME != '' }} and ${{ env.DOCKER_PASSWORD != '' } }
+    if: github.repository_owner == 'HumanBrainProject'
     runs-on: ubuntu-latest
     outputs:
       BASE_IMG: ${{ steps.export-env-var.outputs.BASE_IMG }}
@@ -24,7 +24,7 @@ jobs:
     steps:
     - uses: actions/checkout@v4
     - name: 'Setting tag'
-      if: ${{ contains(github.ref, 'imgbuild') }}
+      if: ${{ contains(github.ref, 'imgbuild') && env.DOCKER_USERNAME != '' && env.DOCKER_PASSWORD != '' }}
       run: |
         echo BASE_TAG=-imgbuild >> $GITHUB_ENV
     

@@ -15,6 +15,7 @@
 # limitations under the Licence.
 
 import pytest
+from subprocess import CalledProcessError
 
 
 @pytest.fixture
@@ -33,10 +34,18 @@ def fake_apply_transform(monkeypatch):
                               cwd=None):
         if (input_space, output_space) in (('A', 'B'), ('B', 'A')):
             return [tuple(point) for point in source_points]
-        raise RuntimeError('Unexpected call')
+        raise CalledProcessError(1, "", None, f'Unexpected call, {source_points}, {input_space}, {output_space}')
+
+    def transform_point_mock(source_point, input_space, output_space, graph,
+                              cwd=None):
+        if (input_space, output_space) in (('A', 'B'), ('B', 'A')):
+            return tuple(source_point)
+        raise CalledProcessError(1, "", None, f'Unexpected call, {input_space}, {output_space}')
 
     monkeypatch.setattr(apply_transform, 'transform_points',
                         transform_points_mock)
+    monkeypatch.setattr(apply_transform, 'transform_point',
+                        transform_point_mock)
 
 
 def test_get_graph_yaml(app, client, dummy_graph_yaml):
@@ -48,81 +57,102 @@ def test_get_graph_yaml(app, client, dummy_graph_yaml):
     assert response.get_data(as_text=True) == graph_yaml_contents
 
 
-def test_transform_point_request_validation(app, client, dummy_graph_yaml):
-    app.config['DEFAULT_TRANSFORM_GRAPH'] = dummy_graph_yaml
-    response = client.get('/v1/transform-point')
-    assert response.status_code == 422
-    response = client.get('/v1/transform-point',
-                          query_string={'source_space': 'A',
-                                        'target_space': 'B',
-                                        'x': 1, 'y': 2, 'z': 3.5})
-    assert response.status_code == 200
-    assert response.json == {'target_point': [1, 2, 3.5]}
+@pytest.mark.parametrize(
+    "query_string, expected_status_code, expected_json",
+    [
+        ({}, 422, None),
+        (
+            {"source_space": "A", "target_space": "B", "x": 1, "y": 2, "z": 3.5},
+            200,
+            {"target_point": [1, 2, 3.5]},
+        ),
+        ({"source_space": "A", "target_space": "B"}, 422, None),
+        ({"x": 1, "y": 2, "z": 3, "target_space": "B"}, 422, None),
+        ({"x": 1, "y": 2, "z": 3, "source_space": "A"}, 422, None),
+        (
+            {
+                "x": 1,
+                "y": 2,
+                "z": 3,
+                "source_space": "A",
+                "target_space": "nonexistent",
+            },
+            400,
+            None,
+        ),
+        (
+            {
+                "x": 1,
+                "y": 2,
+                "z": 3,
+                "source_space": "nonexistent",
+                "target_space": "B",
+            },
+            400,
+            None,
+        ),
+    ],
+)
+def test_transform_point_request_validation(
+    app, client, dummy_graph_yaml, query_string, expected_status_code, expected_json
+):
+    app.config["DEFAULT_TRANSFORM_GRAPH"] = dummy_graph_yaml
+    response = client.get("/v1/transform-point", query_string=query_string)
+    assert response.status_code == expected_status_code
+    if expected_json is not None:
+        assert response.json == expected_json
 
-    response = client.get('/v1/transform-point',
-                          query_string={'source_space': 'A',
-                                        'target_space': 'B'})
-    assert response.status_code == 422
 
-    response = client.get('/v1/transform-point',
-                          query_string={'x': 1, 'y': 2, 'z': 3,
-                                        'target_space': 'B'})
-    assert response.status_code == 422
-
-    response = client.get('/v1/transform-point',
-                          query_string={'x': 1, 'y': 2, 'z': 3,
-                                        'source_space': 'A'})
-    assert response.status_code == 422
-
-    response = client.get('/v1/transform-point',
-                          query_string={'x': 1, 'y': 2, 'z': 3,
-                                        'source_space': 'A',
-                                        'target_space': 'nonexistent'})
-    assert response.status_code == 400
-
-    response = client.get('/v1/transform-point',
-                          query_string={'x': 1, 'y': 2, 'z': 3,
-                                        'source_space': 'nonexistent',
-                                        'target_space': 'B'})
-    assert response.status_code == 400
-
-
-def test_transform_points_request_validation(app, client, dummy_graph_yaml):
-    app.config['DEFAULT_TRANSFORM_GRAPH'] = dummy_graph_yaml
-
-    response = client.get('/v1/transform-points')
-    assert response.status_code == 405
-
-    response = client.post('/v1/transform-points', json={
-        'source_space': 'A',
-        'target_space': 'B',
-        'source_points': [
-            [1, 2, 3.5],
-            [0, -1, 0.5],
-        ],
-    })
-    assert response.status_code == 200
-    assert response.json == {
-        'target_points': [
-            [1, 2, 3.5],
-            [0, -1, 0.5],
-        ],
-    }
-
-    response = client.post('/v1/transform-points', json={
-        'source_space': 'nonexistent',
-        'target_space': 'B',
-        'source_points': [
-            [1, 2, 3.5],
-        ],
-    })
-    assert response.status_code == 400
-
-    response = client.post('/v1/transform-points', json={
-        'source_space': 'A',
-        'target_space': 'B'
-    })
-    assert response.status_code == 422
+@pytest.mark.parametrize(
+    "method, json, expected_status_code, expected_json",
+    [
+        ("GET", None, 405, None),
+        (
+            "POST",
+            {
+                "source_space": "A",
+                "target_space": "B",
+                "source_points": [
+                    [1, 2, 3.5],
+                    [0, -1, 0.5],
+                ],
+            },
+            200,
+            {
+                "target_points": [
+                    [1, 2, 3.5],
+                    [0, -1, 0.5],
+                ],
+            },
+        ),
+        (
+            "POST",
+            {
+                "source_space": "nonexistent",
+                "target_space": "B",
+                "source_points": [
+                    [1, 2, 3.5],
+                ],
+            },
+            400,
+            None,
+        ),
+        (
+            "POST",
+            {"source_space": "A", "target_space": "B"},
+            422,
+            None,
+        ),
+    ],
+)
+def test_transform_points_request_validation(
+    app, client, dummy_graph_yaml, method, json, expected_status_code, expected_json
+):
+    app.config["DEFAULT_TRANSFORM_GRAPH"] = dummy_graph_yaml
+    response = client.open("/v1/transform-points", method=method, json=json)
+    assert response.status_code == expected_status_code
+    if expected_json is not None:
+        assert response.json == expected_json
 
 
 def test_get_mesh_transform_command(app, client, dummy_graph_yaml):
