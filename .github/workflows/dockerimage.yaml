@@ -41,6 +41,8 @@ jobs:
   build-base-image:
     needs:
     - setup-envvar
+    outputs:
+      BASE_IMG_TAG: ${{ steps.push-img.outputs.BASE_IMG_TAG }}
     env:
       IMG_TAG: "${{ needs.setup-envvar.outputs.BASE_IMG }}:base${{ needs.setup-envvar.outputs.BASE_TAG }}"
     runs-on: ubuntu-latest
@@ -49,7 +51,8 @@ jobs:
     - name: Build base image
       run: |
         docker build -t '${{ env.IMG_TAG }}' .
-    - name: Push
+    - id: push-img
+      name: Push
       run: |
         curl https://${{ env.DOCKER_REPO }} # or else docker login will fail
         echo '${{ env.DOCKER_PASSWORD }}' | docker login \
@@ -58,26 +61,31 @@ jobs:
           '${{ env.DOCKER_REPO }}'
         docker push '${{ env.IMG_TAG }}'
         docker logout '${{ env.DOCKER_REPO }}'
+        echo BASE_IMG_TAG=$IMG_TAG >> $GITHUB_OUTPUT
 
-  # build-server-image:
-  #   needs:
-  #   - build-base-image
-  #   - setup-envvar
-  #   runs-on: ubuntu-latest
-  #   steps:
-  #   - uses: actions/checkout@v4
-  #   - name: 'Build and Push'
-  #     run: |
-  #       FULL_TAG=${{ env.DOCKER_REPO }}/${{ env.DOCKER_NAMESPACE }}/${{ env.DOCKER_IMAGE }}:${{ env.DOCKER_TAG }}
-  #       echo FULL_TAG: $FULL_TAG
-  #       docker build -t $FULL_TAG -f Dockerfile.server .
-  #       echo Build successful
-  #       echo Login
-  #       docker login \
-  #         -u '${{ env.DOCKER_USERNAME }}' \
-  #         -P '${{ env.DOCKER_PASSWORD }}' \
-  #         ${{ env.DOCKER_REPO }}
-  #       echo Login Successful
-  #       echo Pushing image
-  #       docker push $FULL_TAG
-  #       echo Pushing image successful
+  build-server-image:
+    needs:
+    - build-base-image
+    - setup-envvar
+    env:
+      IMG_TAG: ${{ needs.setup-envvar.outputs.BASE_IMG }}:server${{ needs.setup-envvar.outputs.BASE_TAG }}
+      FROM_IMG_TAG: ${{ needs.build-base-image.outputs.build-base-image }}
+    runs-on: ubuntu-latest
+    steps:
+    - uses: actions/checkout@v4
+    - name: build
+      run: |
+        docker build \
+          -t '${{ env.IMG_TAG }}' \
+          --build-arg 'BASE_IMAGE=${{ env.FROM_IMG_TAG }}' \
+          -f Dockerfile.server \
+          .
+    - name: 'Build and Push'
+      run: |
+        curl https://${{ env.DOCKER_REPO }} # or else docker login will fail
+        echo '${{ env.DOCKER_PASSWORD }}' | docker login \
+          --username '${{ env.DOCKER_USERNAME }}' \
+          --password-stdin \
+          '${{ env.DOCKER_REPO }}'
+        docker push '${{ env.IMG_TAG }}'
+        docker logout '${{ env.DOCKER_REPO }}'
