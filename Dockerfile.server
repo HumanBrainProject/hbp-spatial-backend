@@ -8,7 +8,7 @@ ENV LANG=C.UTF-8
 ENV PATH=/usr/local/.pixi/envs/default/bin:$PATH
 
 # Upgrade pip as recommended
-RUN python -m pip install --no-cache-dir --upgrade pip
+RUN python -m ensurepip
 
 # Setuptools is needed to import from source, wheel to build/install the
 # package
