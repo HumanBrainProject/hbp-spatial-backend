@@ -6,17 +6,17 @@ FROM ${BASE_IMAGE}
 ENV LANG=C.UTF-8
 
 # Upgrade pip as recommended
-RUN python3 -m pip install --no-cache-dir --upgrade pip
+RUN python -m pip install --no-cache-dir --upgrade pip
 
 # Setuptools is needed to import from source, wheel to build/install the
 # package
-RUN python3 -m pip install --no-cache-dir setuptools wheel
-RUN python3 -m pip install --no-cache-dir gunicorn[gevent]
+RUN python -m pip install --no-cache-dir setuptools wheel
+RUN python -m pip install --no-cache-dir gunicorn[gevent]
 
 COPY . /source
-RUN python3 -m pip install --no-cache-dir /source
+RUN python -m pip install --no-cache-dir /source
 
-ENV INSTANCE_PATH /instance
+ENV INSTANCE_PATH=/instance
 
 VOLUME ${INSTANCE_PATH}
 
@@ -24,7 +24,7 @@ RUN useradd --create-home user
 # RUN mkdir -p ${INSTANCE_PATH} && chown user:user ${INSTANCE_PATH}
 USER user
 
-ENV FLASK_APP hbp_spatial_backend
+ENV FLASK_APP=hbp_spatial_backend
 EXPOSE 8080
 
 ENTRYPOINT ["gunicorn"]
