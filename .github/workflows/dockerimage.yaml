@@ -69,7 +69,7 @@ jobs:
     - setup-envvar
     env:
       IMG_TAG: ${{ needs.setup-envvar.outputs.BASE_IMG }}:server${{ needs.setup-envvar.outputs.BASE_TAG }}
-      FROM_IMG_TAG: ${{ needs.build-base-image.outputs.build-base-image }}
+      FROM_IMG_TAG: ${{ needs.build-base-image.outputs.BASE_IMG_TAG }}
     runs-on: ubuntu-latest
     steps:
     - uses: actions/checkout@v4
