@@ -5,6 +5,8 @@ FROM ${BASE_IMAGE}
 # to deal with non-ASCII characters in source
 ENV LANG=C.UTF-8
 
+ENV PATH=/usr/local/.pixi/envs/default/bin:$PATH
+
 # Upgrade pip as recommended
 RUN python -m pip install --no-cache-dir --upgrade pip
 

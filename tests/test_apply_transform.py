@@ -48,7 +48,7 @@ def test_parse_points_output():
 # def test_get_transform_command(app):
 #     with app.app_context():
 #         cmd = apply_transform.get_transform_command(
-#             ['A.ima', 'B.trm'],
+#             ['A', 'B'],
 #             ['inv:B.ima', 'inv:A.trm'],
 #             reference='reference.nii',
 #             input_coords='auto',
@@ -83,7 +83,7 @@ def test_transform_point(subprocess_run_mock, app):
     with app.app_context():
         res = apply_transform.transform_point(
             (1.1, -2.2, 3e1),
-            ['A.ima', 'B.trm'],
+            'A', 'B', "graph.yaml",
             cwd='toto',
         )
 
@@ -95,7 +95,7 @@ def test_transform_point(subprocess_run_mock, app):
     txt_cmd = ' '.join(cmd)
     assert '--input -' in txt_cmd
     assert '--output -' in txt_cmd
-    assert '--direct-transform A.ima --direct-transform B.trm' in txt_cmd
+    assert '--input-coords A --output-space B' in txt_cmd
     assert kwargs['check'] is True
     assert kwargs['cwd'] == 'toto'
     assert kwargs['universal_newlines'] is True
@@ -116,7 +116,7 @@ def test_transform_points(subprocess_run_mock, app, caplog):
                              logger='hbp_spatial_backend.apply_transform'):
             res = apply_transform.transform_points(
                 [(1, 2, 3), (4, 5, 6)],
-                ['A.ima', 'B.trm'],
+                'A', 'B', "graph.yaml",
                 cwd='toto',
             )
 
@@ -128,7 +128,7 @@ def test_transform_points(subprocess_run_mock, app, caplog):
     txt_cmd = ' '.join(cmd)
     assert '--input -' in txt_cmd
     assert '--output -' in txt_cmd
-    assert '--direct-transform A.ima --direct-transform B.trm' in txt_cmd
+    assert '--input-coords A --output-space B' in txt_cmd
     assert kwargs['check'] is True
     assert kwargs['cwd'] == 'toto'
     assert kwargs['universal_newlines'] is True
