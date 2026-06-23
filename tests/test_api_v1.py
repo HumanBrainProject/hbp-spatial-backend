@@ -34,13 +34,13 @@ def fake_apply_transform(monkeypatch):
                               cwd=None):
         if (input_space, output_space) in (('A', 'B'), ('B', 'A')):
             return [tuple(point) for point in source_points]
-        raise CalledProcessError(1, "", None, f'Unexpected call, {source_points}, {input_space}, {output_space}')
+        raise CalledProcessError(1, "", None, 'Unexpected call')
 
     def transform_point_mock(source_point, input_space, output_space, graph,
-                              cwd=None):
+                             cwd=None):
         if (input_space, output_space) in (('A', 'B'), ('B', 'A')):
             return tuple(source_point)
-        raise CalledProcessError(1, "", None, f'Unexpected call, {input_space}, {output_space}')
+        raise CalledProcessError(1, "", None, 'Unexpected call')
 
     monkeypatch.setattr(apply_transform, 'transform_points',
                         transform_points_mock)
@@ -62,7 +62,10 @@ def test_get_graph_yaml(app, client, dummy_graph_yaml):
     [
         ({}, 422, None),
         (
-            {"source_space": "A", "target_space": "B", "x": 1, "y": 2, "z": 3.5},
+            {
+                "source_space": "A",
+                "target_space": "B", "x": 1, "y": 2, "z": 3.5
+            },
             200,
             {"target_point": [1, 2, 3.5]},
         ),
@@ -93,9 +96,9 @@ def test_get_graph_yaml(app, client, dummy_graph_yaml):
         ),
     ],
 )
-def test_transform_point_request_validation(
-    app, client, dummy_graph_yaml, query_string, expected_status_code, expected_json
-):
+def test_transform_point_request_validation(app, client, dummy_graph_yaml,
+                                            query_string, expected_status_code,
+                                            expected_json):
     app.config["DEFAULT_TRANSFORM_GRAPH"] = dummy_graph_yaml
     response = client.get("/v1/transform-point", query_string=query_string)
     assert response.status_code == expected_status_code
@@ -145,9 +148,10 @@ def test_transform_point_request_validation(
         ),
     ],
 )
-def test_transform_points_request_validation(
-    app, client, dummy_graph_yaml, method, json, expected_status_code, expected_json
-):
+def test_transform_points_request_validation(app, client, dummy_graph_yaml,
+                                             method, json,
+                                             expected_status_code,
+                                             expected_json):
     app.config["DEFAULT_TRANSFORM_GRAPH"] = dummy_graph_yaml
     response = client.open("/v1/transform-points", method=method, json=json)
     assert response.status_code == expected_status_code
