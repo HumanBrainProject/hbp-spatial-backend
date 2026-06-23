@@ -75,6 +75,7 @@ jobs:
     - uses: actions/checkout@v4
     - name: build
       run: |
+        curl https://${{ env.DOCKER_REPO }} # or else docker login will fail
         docker build \
           -t '${{ env.IMG_TAG }}' \
           --build-arg 'BASE_IMAGE=${{ env.FROM_IMG_TAG }}' \
