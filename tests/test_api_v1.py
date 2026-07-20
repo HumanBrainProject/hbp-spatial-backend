@@ -29,22 +29,14 @@ def dummy_graph_yaml(tmpdir):
 def fake_apply_transform(monkeypatch):
     from hbp_spatial_backend import apply_transform
 
-    def transform_points_mock(source_points, transform_chain, cwd=None):
-        if transform_chain in (['A_to_B'], ['B_to_A']):
+    def transform_points_mock(source_points, input_space, output_space, graph,
+                              cwd=None):
+        if (input_space, output_space) in (('A', 'B'), ('B', 'A')):
             return [tuple(point) for point in source_points]
         raise RuntimeError('Unexpected call')
 
     monkeypatch.setattr(apply_transform, 'transform_points',
                         transform_points_mock)
-
-
-def test__get_transform_graph(app, dummy_graph_yaml):
-    from hbp_spatial_backend import api_v1
-    app.config['DEFAULT_TRANSFORM_GRAPH'] = dummy_graph_yaml
-    with app.test_request_context():
-        tg1 = api_v1._get_transform_graph()
-        tg2 = api_v1._get_transform_graph()
-    assert tg1 is tg2  # test that the graph is only loaded once per request
 
 
 def test_get_graph_yaml(app, client, dummy_graph_yaml):

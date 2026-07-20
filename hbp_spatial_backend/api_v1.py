@@ -1,4 +1,4 @@
-# Copyright 2019–2020 CEA
+# Copyright 2019–2026 CEA
 #
 # Author: Yann Leprince <yann.leprince@cea.fr>
 #
@@ -26,7 +26,6 @@ from marshmallow import Schema, fields
 from marshmallow.validate import Length
 
 from hbp_spatial_backend import apply_transform
-from hbp_spatial_backend.transform_graph import TransformGraph
 
 logger = logging.getLogger(__name__)
 
@@ -37,7 +36,7 @@ First version of the API, which uses a static set of cross-space
 transformations.
 
 This service allows clients to transfer data between the core template brains
-of the HBP. These are the four template spaces, along with their identifiers
+of the HBP. These are the five template spaces, along with their identifiers
 which are used within this API:
 
 - [MNI ICBM152 nonlinear 2009c asymmetric](http://nist.mni.mcgill.ca/?p=904)
@@ -45,18 +44,16 @@ which are used within this API:
 - [MNI Colin27](http://nist.mni.mcgill.ca/?p=935) (`MNI Colin 27`);
 - [BigBrain](https://doi.org/10.1126%2Fscience.1235381), 2015 release in
   histological space (`Big Brain (Histology)`);
-- [Infant template](https://doi.org/10.25493%2F49QZ-AWZ) (`Infant Atlas`).
+- [Infant template](https://doi.org/10.25493%2F49QZ-AWZ) (`Infant Atlas`);
+- [MEBRAINS](https://ebrains.eu/data-tools-services/brain-atlases/macaque-brain) Ebrain macaque template.
+- Talairach-brainvisa is not a template but the coordinates system used as the normalized Talairach space in [BrainVisa](https://brainvisa.info) world.
 ''',
 )
 
 
-def _get_transform_graph():
-    if 'transform_graph' not in g:
-        tg_path = current_app.config['DEFAULT_TRANSFORM_GRAPH']
-        g.transform_graph_cwd = os.path.dirname(tg_path)
-        with open(tg_path, 'rb') as f:
-            g.transform_graph = TransformGraph.from_yaml(f)
-    return g.transform_graph
+def transform_graph_path():
+    tg_path = current_app.config['DEFAULT_TRANSFORM_GRAPH']
+    return tg_path
 
 
 @bp.route('/graph.yaml')
@@ -71,8 +68,7 @@ def get_graph_yaml():
     logger.info('default path to graph.yaml: %s',
                 current_app.config['DEFAULT_TRANSFORM_GRAPH'])
     logger.info('instance path: %s', current_app.instance_path)
-    return flask.send_file(current_app.config['DEFAULT_TRANSFORM_GRAPH'],
-                           mimetype='text/x-yaml')
+    return flask.send_file(transform_graph_path(), mimetype='text/x-yaml')
 
 
 class TransformPointRequestSchema(Schema):
@@ -159,13 +155,9 @@ def transform_point(args):
     source_space = args['source_space']
     target_space = args['target_space']
 
-    tg = _get_transform_graph()
-    try:
-        transform_chain = tg.get_transform_chain(source_space, target_space)
-    except KeyError:
-        abort(400, message='source_space or target_space not found')
     target_point = apply_transform.transform_point(
-        source_point, transform_chain, cwd=g.transform_graph_cwd)
+        source_point, input_space=source_space, output_space=target_space,
+        graph=transform_graph_path())
 
     response = jsonify(TransformPointResponseSchema().dump({
         'target_point': target_point,
@@ -285,13 +277,10 @@ def transform_points(args):
     source_space = args['source_space']
     target_space = args['target_space']
 
-    tg = _get_transform_graph()
-    try:
-        transform_chain = tg.get_transform_chain(source_space, target_space)
-    except KeyError:
-        abort(400, errors=['source_space or target_space not found'])
     target_points = apply_transform.transform_points(
-        args['source_points'], transform_chain, cwd=g.transform_graph_cwd)
+        args['source_points'], input_space=source_space,
+        output_space=target_space,
+        graph=transform_graph_path())
 
     return {'target_points': target_points}
 
@@ -316,21 +305,11 @@ def get_mesh_transform_command(args):
     """Get the transform command."""
     source_space = args['source_space']
     target_space = args['target_space']
-    input_coords = args['input_coords']
-
-    tg = _get_transform_graph()
-    try:
-        direct_transform_chain = tg.get_transform_chain(source_space,
-                                                        target_space)
-        inverse_transform_chain = tg.get_transform_chain(target_space,
-                                                         source_space)
-    except KeyError:
-        abort(400, errors=['source_space or target_space not found'])
 
     transform_command = apply_transform.get_transform_command(
-        direct_transform_chain=direct_transform_chain,
-        inverse_transform_chain=inverse_transform_chain,
-        input_coords=input_coords,
+        input_space=source_space,
+        output_space=target_space,
+        graph=transform_graph_path()
     )
 
     response = jsonify(GetTransformCommandResponseSchema().dump({
@@ -362,34 +341,12 @@ def get_image_transform_command(args):
     """Get the transform command."""
     source_space = args['source_space']
     target_space = args['target_space']
-    input_coords = args['input_coords']
-
-    tg = _get_transform_graph()
-    try:
-        inverse_transform_chain = tg.get_transform_chain(target_space,
-                                                         source_space)
-    except KeyError:
-        abort(400, errors=['source_space or target_space not found'])
-
-    # For resampling images we have use AIMS image coordinates (whose origin is
-    # in the corner of the field of view), so we have to remove the last affine
-    # transformation of the chain, whose purpose is to go from these image
-    # coordinates to template coordinates (whose origin is usually centered
-    # around the center of the brain in the region of the anterior commissure).
-    #
-    # FIXME: This is a kind of hack that is specific to the way that the
-    # transform graph is stored as of now. The proper solution will need
-    # options to be added to AimsApplyTransform for properly specifying the
-    # output geometry (i.e. setting the FoV).
-    inverse_transform_chain = inverse_transform_chain[1:]
-    reference = inverse_transform_chain[0]
-    assert not reference.startswith('inv:')
-    assert not reference.endswith('.trm')
 
     transform_command = apply_transform.get_transform_command(
-        inverse_transform_chain=inverse_transform_chain,
-        reference=reference,
-        input_coords=input_coords,
+        input_space=source_space,
+        output_coords=target_space,
+        graph=transform_graph_path(),
+        reference='auto'
     )
 
     response = jsonify(GetTransformCommandResponseSchema().dump({

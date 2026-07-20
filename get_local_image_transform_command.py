@@ -25,11 +25,13 @@ import requests
 
 
 """
-Source and target spaces can be one of the 4 spaces:
+Source and target spaces can be one of the 6 spaces:
 "MNI 152 ICBM 2009c Nonlinear Asymmetric"
 "MNI Colin 27"
 "Big Brain (Histology)"
 "Infant Atlas"
+"MEBRAINS"
+"Talairach-brainvisa"
 """
 SOURCE_SPACE_DEFAULT = "MNI 152 ICBM 2009c Nonlinear Asymmetric"
 TARGET_SPACE_DEFAULT = "Big Brain (Histology)"
@@ -129,7 +131,9 @@ def parse_args(argv):
         choices=["MNI 152 ICBM 2009c Nonlinear Asymmetric",
                  "MNI Colin 27",
                  "Big Brain (Histology)",
-                 "Infant Atlas"],
+                 "Infant Atlas",
+                 "MEBRAINS",
+                 "Talairach-brainvisa"],
         help='Source template space from which we make the transform '
              'Default is : ' + SOURCE_SPACE_DEFAULT)
     parser.add_argument(
@@ -137,7 +141,9 @@ def parse_args(argv):
         choices=["MNI 152 ICBM 2009c Nonlinear Asymmetric",
                  "MNI Colin 27",
                  "Big Brain (Histology)",
-                 "Infant Atlas"],
+                 "Infant Atlas",
+                 "MEBRAINS",
+                 "Talairach-brainvisa"],
         help='Target template space to which we make the transform '
              'Default is : ' + TARGET_SPACE_DEFAULT)
 
