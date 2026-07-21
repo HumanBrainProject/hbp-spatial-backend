@@ -2,6 +2,10 @@ ARG BASE_IMAGE=docker-registry.ebrains.eu/hbp-spatial-backend/server:base-imgbui
 
 FROM ${BASE_IMAGE}
 
+# this could be affecting AimsApplyTransform invocation speed.
+# overhead results in ~2.4s resp time, compared to ~0.4s previously
+RUN sed -i "s/'libpyaimsplugin.so',/#'libpyaimsplugin.so',/" /usr/local/.pixi/envs/default/share/aims-6.0/plugins/aimsdata.plugins
+
 # to deal with non-ASCII characters in source
 ENV LANG=C.UTF-8
 
