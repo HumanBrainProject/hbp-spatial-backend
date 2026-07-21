@@ -37,7 +37,7 @@ def transform_points(source_points, input_space, output_space, graph,
            '--output-space', output_space,
            '--input', '-',
            '--output', '-'
-          ]
+           ]
     input_points_str = '\n'.join(
         '({0}, {1}, {2})'.format(*p) for p in source_points
     )

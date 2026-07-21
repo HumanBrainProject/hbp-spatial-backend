@@ -147,7 +147,7 @@ def create_app(test_config=None):
     def source():
         return flask.redirect(SOURCE_URL)
 
-    # Return success if the app is ready to serve requests. Used in OpenShift
+    # Return success if the app is ready to serve requests. Used in k8s
     # health checks.
     @app.route("/health")
     def health():
