@@ -35,7 +35,13 @@ def load_graph(graph_file):
     if graph_file in graph:
         return graph[graph_file]
     g = aims.read(graph_file)
+    # set fields allocator for mmap preferably
+    ac = aims.carto.AllocatorContext(aims.carto.AllocatorStrategy.ReadOnly)
+    ac.setUseFactor(0.)
+    g.setAllocatorContext(ac)
+
     graph[graph_file] = g
+
     return g
 
 
