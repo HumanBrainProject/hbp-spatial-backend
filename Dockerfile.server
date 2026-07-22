@@ -1,10 +1,7 @@
 ARG BASE_IMAGE=docker-registry.ebrains.eu/hbp-spatial-backend/server:base-imgbuild
+# ARG BASE_IMAGE=hbp-spatial-backend
 
 FROM ${BASE_IMAGE}
-
-# this could be affecting AimsApplyTransform invocation speed.
-# overhead results in ~2.4s resp time, compared to ~0.4s previously
-RUN sed -i "s/'libpyaimsplugin.so',/#'libpyaimsplugin.so',/" /usr/local/.pixi/envs/default/share/aims-6.0/plugins/aimsdata.plugins
 
 # to deal with non-ASCII characters in source
 ENV LANG=C.UTF-8
@@ -12,15 +9,14 @@ ENV LANG=C.UTF-8
 ENV PATH=/usr/local/.pixi/envs/default/bin:$PATH
 
 # Upgrade pip as recommended
-RUN python -m ensurepip
+RUN bv pixi add pip
 
 # Setuptools is needed to import from source, wheel to build/install the
 # package
-RUN python -m pip install --no-cache-dir setuptools wheel
-RUN python -m pip install --no-cache-dir gunicorn[gevent]
+RUN bv pixi add setuptools gunicorn "gevent>=24.10"
 
 COPY . /source
-RUN python -m pip install --no-cache-dir /source
+RUN bv python -m pip install --no-cache-dir /source
 
 ENV INSTANCE_PATH=/instance
 
@@ -33,6 +29,6 @@ USER user
 ENV FLASK_APP=hbp_spatial_backend
 EXPOSE 8080
 
-ENTRYPOINT ["gunicorn"]
+ENTRYPOINT ["bv", "gunicorn"]
 
 CMD ["--access-logfile=-", "--preload", "hbp_spatial_backend.wsgi:application", "--bind=:8080", "--worker-class=gevent"]

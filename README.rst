@@ -63,7 +63,8 @@ First, we build the docker image:
 
    # Command to run from the directory hbp-spatial-backend
    # This creates the container hbp-spatial-backend
-   docker build -t hbp-spatial-backend .
+   docker build -t hbp-spatial-backend --network host .
+   docker build -t hbp-spatial-backend-server --network host --file Dockerfile.server .
 
 Then, we mount data directory (where our nifti files lie)
 into the directory /Data of the container and we run the docker container:
@@ -74,7 +75,7 @@ into the directory /Data of the container and we run the docker container:
    # containing your nii files into the container directory /Data
    # Change DATA_DIR to match your local data directory
    DATA_DIR=/your/path/to/data/dir
-   docker run -t -i --rm -p 8080:8080 -v $DATA_DIR:/Data hbp-spatial-backend
+   docker run -t -i --rm -p 8080:8080 -v $DATA_DIR:/Data hbp-spatial-backend-server
 
 This has launched the flask server and has opened a bash shell in the container.
 
