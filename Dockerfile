@@ -7,3 +7,5 @@ RUN pixi add soma=6.0.19 && pixi run bv_update_bin_links
 
 # start a shell in the pixi environment
 ENTRYPOINT /bin/bash /usr/local/bin/bv /bin/bash
+
+# N.B. if this dockerfile changes, reflect changes in .github/workflows/tox.yaml
