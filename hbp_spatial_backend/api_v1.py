@@ -15,12 +15,11 @@
 # limitations under the Licence.
 
 import logging
-import os.path
+from subprocess import CalledProcessError
 
 import flask
-from flask import current_app, g, jsonify
+from flask import current_app, jsonify, abort
 import flask_smorest
-from flask_smorest import abort
 import marshmallow
 from marshmallow import Schema, fields
 from marshmallow.validate import Length
@@ -45,9 +44,11 @@ which are used within this API:
 - [BigBrain](https://doi.org/10.1126%2Fscience.1235381), 2015 release in
   histological space (`Big Brain (Histology)`);
 - [Infant template](https://doi.org/10.25493%2F49QZ-AWZ) (`Infant Atlas`);
-- [MEBRAINS](https://ebrains.eu/data-tools-services/brain-atlases/macaque-brain) Ebrain macaque template.
-- Talairach-brainvisa is not a template but the coordinates system used as the normalized Talairach space in [BrainVisa](https://brainvisa.info) world.
-''',
+- [MEBRAINS](https://ebrains.eu/data-tools-services/brain-atlases/macaque-brain)
+  Ebrain macaque template.
+- Talairach-brainvisa is not a template but the coordinates system used as the
+  normalized Talairach space in [BrainVisa](https://brainvisa.info) world.
+''', # noqa : E501
 )
 
 
@@ -155,9 +156,13 @@ def transform_point(args):
     source_space = args['source_space']
     target_space = args['target_space']
 
-    target_point = apply_transform.transform_point(
-        source_point, input_space=source_space, output_space=target_space,
-        graph=transform_graph_path())
+    try:
+        target_point = apply_transform.transform_point(
+            source_point, input_space=source_space, output_space=target_space,
+            graph=transform_graph_path())
+    except CalledProcessError as e:
+        abort(400, f"Transform error: {e.stderr}")
+        return
 
     response = jsonify(TransformPointResponseSchema().dump({
         'target_point': target_point,
@@ -277,10 +282,14 @@ def transform_points(args):
     source_space = args['source_space']
     target_space = args['target_space']
 
-    target_points = apply_transform.transform_points(
-        args['source_points'], input_space=source_space,
-        output_space=target_space,
-        graph=transform_graph_path())
+    try:
+        target_points = apply_transform.transform_points(
+            args['source_points'], input_space=source_space,
+            output_space=target_space,
+            graph=transform_graph_path())
+    except CalledProcessError as e:
+        abort(400, f"Transform error: {e.stderr}")
+        return
 
     return {'target_points': target_points}
 
