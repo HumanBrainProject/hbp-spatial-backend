@@ -20,6 +20,9 @@ jobs:
     outputs:
       BASE_IMG: ${{ steps.export-env-var.outputs.BASE_IMG }}
       BASE_TAG: ${{ steps.export-env-var.outputs.BASE_TAG }}
+      MR_TITLE: ${{ steps.export-env-var.outputs.MR_TITLE }}
+      DEPLOY_FILE: ${{ steps.export-env-var.outputs.DEPLOY_FILE }}
+      DELTA_B64: ${{ steps.export-env-var.outputs.DELTA_B64 }}
     steps:
       - uses: actions/checkout@v4
       - name: "Setting tag"
@@ -28,6 +31,13 @@ jobs:
           if [[ "${{ github.ref }}" == *"imgbuild"* ]]
           then
             echo BASE_TAG=-imgbuild >> $GITHUB_ENV
+            echo "MR_TITLE=hbp-spatial-backend imgbuild deploy ${GITHUB_SHA::7}" >> $GITHUB_ENV
+            echo DEPLOY_FILE=hbp-spatial-backend/hbp-spatial-backend/values/prod/values.yaml >> $GITHUB_ENV
+            cat > /tmp/delta.yaml << EOF
+            podAnnotations:
+              hash: "h-${GITHUB_SHA}"
+            EOF
+            echo "DELTA_B64=$(base64 -w 0 /tmp/delta.yaml)" >> "$GITHUB_OUTPUT"
           fi
 
       - name: "export env var"
@@ -89,3 +99,31 @@ jobs:
             '${{ env.DOCKER_REPO }}'
           docker push '${{ env.IMG_TAG }}'
           docker logout '${{ env.DOCKER_REPO }}'
+
+  trigger-deploy-rancher:
+    needs:
+      - build-server-image
+      - setup-envvar
+    runs-on: ubuntu-latest
+    steps:
+    - run: |
+        DEPLOY_FILE="${{ needs.setup-envvar.outputs.DEPLOY_FILE }}"
+        DELTA_B64="${{ needs.setup-envvar.outputs.DELTA_B64 }}"
+        if [[ -z "$DEPLOY_FILE" || -z "$DELTA_B64" ]]; then
+          echo "DEPLOY_FILE or DELTA_B64 is undefined, skipping deploy"
+          exit 1
+        fi
+
+        UPDATE_FILES=$(jq -cn \
+          --arg filename "$DEPLOY_FILE" \
+          --arg delta "$DELTA_B64" \
+          '[{"filename": $filename, "delta": $delta}]')
+        
+        MR_TITLE="${{ needs.setup-envvar.outputs.MR_TITLE }}"
+
+        curl -fL -X POST \
+          --form "token=${{ secrets.GITLAB_TRIGGER_TOKEN }}" \
+          --form "ref=main" \
+          --form "variables[UPDATE_FILES]=$UPDATE_FILES" \
+          --form "variables[MR_TITLE]=$MR_TITLE" \
+          "${{ secrets.GITLAB_GITOPS_URL }}/api/v4/projects/${{ secrets.GITLAB_GITOPS_PROJECT_ID }}/trigger/pipeline"

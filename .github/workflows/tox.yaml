@@ -25,22 +25,33 @@ jobs:
         # launcher.
         # n.b. update setup here if Dockerfile changes
         pixi init -c https://brainvisa.info/neuro-forge -c conda-forge
-        pixi add soma=6.0.19
+        # Add every conda dependency first, then generate the bin links LAST.
+        # `bv_update_bin_links` creates the `bv` launcher (and links to the
+        # BrainVISA commands); adding packages afterwards re-solves the env and
+        # wipes those links, causing `bv: command not found`.
+        # setuptools/wheel are required to build the setup.py-based package
+        # (see Dockerfile.server, which adds them for the same reason).
+        pixi add soma=6.0.19 pip setuptools wheel pytest
         pixi run bv_update_bin_links
-        # Tooling needed to install and test the package inside the env.
-        pixi add pip pytest
+        # `bv_update_bin_links` writes the `bv` launcher (and the BrainVISA
+        # command links) into the pixi project's own `bin/` directory, NOT into
+        # the pixi env, so `pixi run bv` cannot find it. Put that `bin/` on the
+        # PATH for the following steps, then call `bv` directly (as the
+        # Dockerfiles do).
+        echo "$PWD/bin" >> "$GITHUB_PATH"
 
     - name: Install the package
       run: |
-        # Installed with pip (inside the pixi env) to pull the Flask runtime
-        # dependencies and the test extras from setup.py.
-        pixi run bv python -m pip install --no-cache-dir -e ".[tests]"
+        # `bv` runs the command inside the configured BrainVISA environment.
+        # Installed with pip to pull the Flask runtime dependencies and the test
+        # extras from setup.py.
+        bv python -m pip install --no-cache-dir -e ".[tests]"
 
     - name: Test with pytest
       run: |
         # `bv` runs the command inside the configured BrainVISA environment so
         # that `soma` is importable and `AimsApplyTransform` is on the PATH.
-        pixi run bv python -m pytest tests/
+        bv python -m pytest tests/
 
   codestyle:
     runs-on: ubuntu-latest
