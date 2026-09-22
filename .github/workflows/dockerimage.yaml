@@ -30,14 +30,18 @@ jobs:
         run: |
           if [[ "${{ github.ref }}" == *"imgbuild"* ]]
           then
-            echo BASE_TAG=-imgbuild >> $GITHUB_ENV
-            echo "MR_TITLE=hbp-spatial-backend imgbuild deploy ${GITHUB_SHA::7}" >> $GITHUB_ENV
-            echo DEPLOY_FILE=hbp-spatial-backend/hbp-spatial-backend/values/prod/values.yaml >> $GITHUB_ENV
-            cat > /tmp/delta.yaml << EOF
-            podAnnotations:
-              hash: "h-${GITHUB_SHA}"
-            EOF
-            echo "DELTA_B64=$(base64 -w 0 /tmp/delta.yaml)" >> "$GITHUB_OUTPUT"
+
+          echo BASE_TAG=-imgbuild >> $GITHUB_ENV
+          echo "MR_TITLE=hbp-spatial-backend imgbuild deploy ${GITHUB_SHA::7}" >> $GITHUB_ENV
+          echo DEPLOY_FILE=hbp-spatial-backend/hbp-spatial-backend/values/prod/values.yaml >> $GITHUB_ENV
+
+          # keep same indent level, as required by EOF marker
+          cat > /tmp/delta.yaml << EOF
+          podAnnotations:
+            hash: "h-${GITHUB_SHA}"
+          EOF
+          echo "DELTA_B64=$(base64 -w 0 /tmp/delta.yaml)" >> "$GITHUB_OUTPUT"
+
           fi
 
       - name: "export env var"
